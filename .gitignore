@@ -16,3 +16,6 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# built dashboard bundle (regenerate: python scripts/40_dashboard_data.py && build)
+dashboard/index.html
