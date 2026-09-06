@@ -10,7 +10,7 @@
 |---|---|
 | **Team name** * | `F1` |
 | **Other team members** | *(leave empty if solo)* |
-| **Demo video URL** * | ⏳ **the one thing still needed** — record, upload Unlisted, paste link |
+| **Demo video URL** * | `https://youtu.be/-rFrEELwZT8` ✅ verified unlisted |
 | **Project or repo link** | `https://github.com/varadharajanv0310/olist-promise-problem` |
 | **Login details** | `Not required — everything is public.` |
 | **Anything else we should know?** | see block below |
@@ -26,9 +26,9 @@ three minutes; the recommendation and the result are at the "a promise per order
 Live links:
 Interactive dashboard  https://varadharajanv0310.github.io/olist-promise-problem/
 Analysis report        https://varadharajanv0310.github.io/olist-promise-problem/report/
-Colab notebook         <PASTE COLAB LINK>
+Colab notebook         https://colab.research.google.com/drive/12w5k30kdtEH3B3VPfc7fRR969FnxZk-j?usp=sharing
 Code                   https://github.com/varadharajanv0310/olist-promise-problem
-LinkedIn post          <PASTE POST URL>
+LinkedIn post          https://www.linkedin.com/posts/v-varadharajan_dataanalytics-dataanalyticshackathon-datascience-activity-7502399386262360064-Xi5u
 
 Headline finding: satisfaction is flat across every early-delivery bucket and collapses
 past the promised date — 15 days early instead of 3 is worth +0.10 stars, while 3 days
