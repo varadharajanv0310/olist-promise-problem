@@ -11,14 +11,23 @@ OUT.parent.mkdir(exist_ok=True)
 cells = []
 
 
+def _lines(src):
+    """Split into .ipynb `source` form.
+
+    Every element MUST end with a newline except the last. Jupyter and Colab concatenate the
+    list verbatim, so a list of bare lines collapses the whole cell onto one line and every
+    code cell raises SyntaxError. Splitting with keepends is the whole fix.
+    """
+    return src.strip("\n").splitlines(keepends=True)
+
+
 def md(src):
-    cells.append({"cell_type": "markdown", "metadata": {},
-                  "source": src.strip("\n").split("\n")})
+    cells.append({"cell_type": "markdown", "metadata": {}, "source": _lines(src)})
 
 
 def code(src):
     cells.append({"cell_type": "code", "metadata": {}, "execution_count": None,
-                  "outputs": [], "source": src.strip("\n").split("\n")})
+                  "outputs": [], "source": _lines(src)})
 
 
 # ════════════════════════════════════════════════════════════════ TITLE
