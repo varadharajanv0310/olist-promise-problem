@@ -20,6 +20,9 @@
 ```
 The Promise Problem — an analysis of 99,441 Olist marketplace orders (Sep 2016 – Oct 2018).
 
+The demo video is chaptered. If you are short on time, the core argument is the first
+three minutes; the recommendation and the result are at the "a promise per order" chapter.
+
 Live links:
 Interactive dashboard  https://varadharajanv0310.github.io/olist-promise-problem/
 Analysis report        https://varadharajanv0310.github.io/olist-promise-problem/report/

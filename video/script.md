@@ -3,9 +3,9 @@
 Screen-record and talk over it. Cues in *italics* are what to have on screen; everything else is what
 to say. Read it once out loud first so it sounds spoken rather than read.
 
-**Note on length:** this covers everything — dashboard, report, notebook and repo. Read straight
-through it runs about four and a half minutes. If you need to hit three, the sections marked
-**[CUT IF SHORT]** come out cleanly without breaking the thread.
+**Note on length:** this is 918 spoken words, which is 7–8 minutes at a normal presenting pace.
+It is NOT a three-minute script. `script-3min.md` is the budgeted one (298 words, ~2:45).
+Use this version only if you deliberately want the full walkthrough.
 
 ---
 
