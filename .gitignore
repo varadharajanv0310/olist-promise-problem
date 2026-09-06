@@ -19,3 +19,6 @@ Thumbs.db
 
 # built dashboard bundle (regenerate: python scripts/40_dashboard_data.py && build)
 dashboard/index.html
+
+# built report bundle (regenerate: python scripts/51_build_report.py)
+report/index.html

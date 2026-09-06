@@ -1,0 +1,509 @@
+<title>The Promise Problem</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --ground:#f7f6f3; --surface:#fffefb; --surface-2:#f1efe9;
+  --ink:#14201f; --ink-2:#3f4c4a; --ink-3:#5f6c6a; --muted:#8b9694;
+  --rule:#e3e0d9; --rule-2:#d3cfc5;
+  --ok:#0f6b5c; --ok-soft:#e2efec; --late:#c2410c; --late-soft:#f9e7dc;
+  --accent:#0f6b5c;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#101413; --surface:#171d1c; --surface-2:#1e2625;
+  --ink:#f0eee9; --ink-2:#c8d1cf; --ink-3:#a3aead; --muted:#7f8b89;
+  --rule:#2a3332; --rule-2:#39433f;
+  --ok:#2fa88f; --ok-soft:#16302b; --late:#e8703c; --late-soft:#33201a;
+  --accent:#2fa88f;
+}}
+:root[data-theme="dark"]{
+  --ground:#101413; --surface:#171d1c; --surface-2:#1e2625;
+  --ink:#f0eee9; --ink-2:#c8d1cf; --ink-3:#a3aead; --muted:#7f8b89;
+  --rule:#2a3332; --rule-2:#39433f;
+  --ok:#2fa88f; --ok-soft:#16302b; --late:#e8703c; --late-soft:#33201a;
+  --accent:#2fa88f;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16.5px;line-height:1.68;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:44px 24px 90px}
+.col{max-width:672px}                       /* ~66 characters of running text */
+h1,h2,h3,h4{font-family:Archivo,system-ui,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.2vw,54px);font-weight:700;letter-spacing:-.028em;line-height:1.04}
+h2{font-size:27px;font-weight:600;letter-spacing:-.018em;line-height:1.18}
+h3{font-size:19px;font-weight:600;letter-spacing:-.01em}
+p{margin:0 0 17px}
+a{color:var(--accent)}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:italic}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+
+header{border-bottom:2px solid var(--ink);padding-bottom:34px;margin-bottom:38px}
+.standfirst{font-size:20px;line-height:1.55;color:var(--ink-2);margin-top:20px;max-width:640px}
+.byline{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:26px}
+.byline span{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.byline b{color:var(--ink-2);font-weight:500}
+
+section{margin-bottom:52px;scroll-margin-top:20px}
+.snum{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  color:var(--accent);text-transform:uppercase;display:block;margin-bottom:9px}
+h2+p,h3+p{margin-top:12px}
+h3{margin:32px 0 0}
+
+/* headline stat band */
+.band{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin:30px 0 34px}
+.band div{background:var(--surface);padding:16px 17px}
+.band .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.band .v{font-family:Archivo,sans-serif;font-size:30px;font-weight:600;letter-spacing:-.02em;
+  margin-top:6px;line-height:1.12}
+.band .n{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.42}
+
+/* pull quote */
+.pull{border-left:3px solid var(--accent);padding:4px 0 4px 22px;margin:30px 0;
+  font-family:Archivo,sans-serif;font-size:21px;line-height:1.42;font-weight:500;
+  letter-spacing:-.012em;color:var(--ink);max-width:640px}
+.pull.warn{border-left-color:var(--late)}
+
+figure{margin:32px 0;max-width:100%}
+figure img{width:100%;height:auto;display:block;border:1px solid var(--rule);background:#fcfcfb}
+figcaption{font-size:13px;color:var(--muted);margin-top:11px;line-height:1.5;max-width:660px}
+figcaption b{color:var(--ink-2);font-weight:500}
+
+.tbl{overflow-x:auto;margin:26px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;
+  border-bottom:1px solid var(--rule-2);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-family:"IBM Plex Mono",monospace}
+tbody tr:hover{background:var(--surface-2)}
+
+.kill{background:var(--late-soft);border:1px solid var(--rule);padding:22px 24px;margin:30px 0}
+.kill h3{margin:0 0 10px;color:var(--late)}
+.kill ol{margin:0;padding-left:20px}
+.kill li{margin-bottom:11px;color:var(--ink-2)}
+.kill li b{color:var(--ink)}
+
+.note{background:var(--surface-2);border-left:3px solid var(--rule-2);padding:16px 20px;
+  margin:26px 0;font-size:14.5px;color:var(--ink-2)}
+.note b{color:var(--ink)}
+
+ol.rec{list-style:none;counter-reset:r;padding:0;margin:26px 0}
+ol.rec li{counter-increment:r;position:relative;padding:0 0 22px 46px;margin-bottom:22px;
+  border-bottom:1px solid var(--rule)}
+ol.rec li:last-child{border-bottom:0}
+ol.rec li::before{content:counter(r);position:absolute;left:0;top:1px;width:29px;height:29px;
+  border-radius:50%;background:var(--accent);color:#fff;font-family:Archivo,sans-serif;
+  font-weight:600;font-size:14px;display:grid;place-items:center}
+ol.rec h4{font-size:17px;margin-bottom:6px}
+ol.rec p{margin-bottom:8px;color:var(--ink-2);font-size:15px}
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  padding:2px 8px;border-radius:3px;background:var(--ok-soft);color:var(--ok);
+  font-weight:600;letter-spacing:.03em;margin-right:7px}
+.tag.med{background:var(--late-soft);color:var(--late)}
+
+footer{margin-top:56px;padding-top:26px;border-top:1px solid var(--rule);
+  font-size:13px;color:var(--muted);line-height:1.62}
+footer b{color:var(--ink-2);font-weight:500}
+hr{border:0;border-top:1px solid var(--rule);margin:44px 0}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Olist Marketplace · Analysis Report · Sep 2016 – Oct 2018</p>
+  <h1>The Promise Problem</h1>
+  <p class="standfirst">Olist promises delivery in a median of 23 days and delivers in 10. That
+    twelve-day padding looks like broken forecasting. It is the most valuable thing the company owns
+    — and it is being spent.</p>
+  <div class="byline">
+    <span>Orders analysed <b>99,441</b></span>
+    <span>Sellers <b>3,095</b></span>
+    <span>Customers <b>96,096</b></span>
+    <span>Reviews <b>99,441</b></span>
+  </div>
+</header>
+
+<div class="col">
+<section>
+  <span class="snum">01 — Problem understanding</span>
+  <h2>What leadership asked, and what the data can actually answer</h2>
+  <p>Olist connects small Brazilian merchants to the major marketplaces through a single contract.
+    When a customer buys, the responsible seller is notified, ships through Olist's logistics
+    partners, and — once the order arrives, <em>or once the estimated delivery date passes</em> — the
+    customer receives a satisfaction survey.</p>
+  <p>That last clause turns out to matter enormously, and we return to it in section 4.</p>
+  <p>Leadership has two years of orders, payments, reviews and delivery timestamps, and no
+    consolidated view connecting them. The question is what is actually shaping customer experience,
+    and where the clearest opportunities are.</p>
+  <p>One framing decision shapes everything below. <strong>Review scores are bimodal</strong> — 57%
+    are five stars, 12% are one star, and there is very little in between. A mean over that
+    distribution averages two populations that barely overlap. So where it matters we model
+    <strong>P(1-star)</strong>: the business question is not "how satisfied is the average customer"
+    but "what makes someone furious".</p>
+</section>
+
+<section>
+  <span class="snum">02 — Analytical approach</span>
+  <h2>Structured as an investigation, not a survey</h2>
+  <p>Every table was reduced to a single analytical row per order — 99,441 rows, 65 columns — with
+    seven cleaning decisions made once and documented, including two that materially change the
+    answers: <strong>775 orders have no line items at all</strong> (overwhelmingly the cancelled and
+    unavailable ones, so an inner join silently deletes the platform's worst outcomes), and
+    <strong>reviews contain 827 duplicate identifiers</strong> across 555 orders surveyed more than
+    once.</p>
+  <p>Time series are restricted to <strong>January 2017 – August 2018</strong>. The months outside
+    that window hold 4, 1, 16 and 4 orders respectively — export artifacts that would otherwise
+    invent a collapse at both ends of every chart.</p>
+  <p>Beyond description, three things carry the argument: a <strong>regression discontinuity</strong>
+    that tests our own headline hypothesis and rejects it, a <strong>logistic driver model</strong>
+    that ranks causes of one-star reviews by effect size, and a <strong>held-out predictive
+    model</strong> that turns the central finding into an operating policy.</p>
+</section>
+</div>
+
+<section>
+  <span class="snum">03 — Key insight</span>
+  <div class="col"><h2>Satisfaction is a cliff, not a slope</h2>
+  <p>This is the finding everything else hangs from. Customer satisfaction does not decay gradually
+    as delivery slips. It holds almost perfectly flat right up to the promised date, then collapses.</p></div>
+
+  <div class="band">
+    <div><div class="k">15 days early → 3 days early</div><div class="v" style="color:var(--ok)">+0.10</div>
+      <div class="n">stars gained for twelve extra days of speed</div></div>
+    <div><div class="k">3 days late → 7 days late</div><div class="v" style="color:var(--late)">−1.45</div>
+      <div class="n">stars lost for four days of slippage</div></div>
+    <div><div class="k">Late orders</div><div class="v">8.1%</div>
+      <div class="n">of deliveries, but 37.7% of all 1-star reviews</div></div>
+  </div>
+
+  <figure><img src="FIG:q2_the_cliff" alt="Mean review score by delivery outcome, showing a flat plateau for early deliveries and a collapse after the promised date">
+    <figcaption><b>The asymmetry is the whole argument.</b> Earliness buys almost nothing; lateness
+      costs almost everything, and the damage saturates by about day seven — past that point there is
+      no further downside and no way back. The relationship holds in <b>every one of 26 categories
+      and all 21 states</b> with enough volume to measure. It is structural, not a pocket.</figcaption></figure>
+
+  <div class="col">
+  <p>The strategic consequence is immediate. Olist's twelve-day buffer is not sloppy forecasting — it
+    is a correctly-priced insurance policy against a wildly asymmetric downside. And the obvious
+    recommendation, <em>"your estimates are inaccurate, tighten them"</em>, turns out to be something
+    Olist has already been doing.</p></div>
+
+  <figure><img src="FIG:q2_promise_vs_actual" alt="Median promised versus actual delivery time by month, showing the gap between them narrowing over nineteen months">
+    <figcaption>Between January 2017 and August 2018 Olist cut its median promise from <b>39 days to
+      13</b> while actual delivery improved by <b>under four days</b>. The buffer collapsed from 28
+      days to 6 — and the late rate tripled from 3.1% to 10.4%. The experiment has already run.
+      This chart is its post-mortem.</figcaption></figure>
+</section>
+
+<div class="col">
+<section>
+  <span class="snum">04 — The hypothesis we killed</span>
+  <h2>A smoking gun that turned out to be nothing</h2>
+  <p>Olist's survey fires at <span class="mono">estimated_delivery_date + 2 days</span> — median
+    exactly 2.0, inter-quartile range 2 to 2. So when an order runs late, the customer is asked to
+    rate it <em>before it arrives</em>.</p>
+  <p class="pull warn">37% of every 1-star review in this dataset was written by someone who did not
+    yet have their product.</p>
+  <p>That looked like a measurement artifact depressing Olist's scores, with a cheap fix: delay the
+    survey. Before recommending it, we tested it.</p>
+  <p>The trigger rule creates a sharp discontinuity — an order is surveyed pre-delivery <em>if and
+    only if</em> it runs more than two days late. A customer 1.9 days late and one 2.1 days late had
+    near-identical experiences but received a different survey. Any jump in score exactly at that
+    threshold is the survey effect, net of lateness.</p>
+  <p><strong>There is no jump.</strong> The estimate is <span class="mono">+0.15 stars (SE 0.19)</span>,
+    indistinguishable from zero at every bandwidth tested; placebo cutoffs show two days is
+    unremarkable; a donut specification agrees. The 95% confidence interval rules out anything above
+    0.52 stars against a raw gap of 1.50. <strong>Roughly 1.35 of those 1.50 stars is simply the
+    order being late.</strong></p>
+  <p>The hypothesis is dead, and killing it was worth more than keeping it. It validates the review
+    score as a genuine measure rather than an artifact, and it eliminates a plausible-sounding fix
+    that would have done nothing.</p>
+  <p>But the text tells a second story. The scores are identical; the <em>content</em> is not.</p>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Complaint theme in 1-star reviews</th><th class="num">Pre-delivery</th>
+      <th class="num">Post-delivery</th><th class="num">Lift</th></tr></thead>
+    <tbody>
+      <tr><td><em>"não recebi / não chegou"</em> — didn't receive it</td><td class="num">53.4%</td><td class="num">15.6%</td><td class="num">3.4×</td></tr>
+      <tr><td><em>"atraso / demora"</em> — late</td><td class="num">23.4%</td><td class="num">6.8%</td><td class="num">3.5×</td></tr>
+      <tr><td><em>"errado / quebrado"</em> — wrong or broken</td><td class="num">2.0%</td><td class="num">12.9%</td><td class="num">0.16×</td></tr>
+      <tr><td><em>"faltou / só veio"</em> — only part arrived</td><td class="num">3.6%</td><td class="num">10.3%</td><td class="num">0.35×</td></tr>
+    </tbody></table></div>
+
+  <p class="pull">The survey is not a broken measurement. It is an unread distress signal — 8,446
+    customers reporting non-receipt while the order is still in flight and still recoverable.</p>
+  <p>The recommendation changes accordingly: not <em>delay the survey</em>, but <em>act on it</em>.</p>
+</section>
+</div>
+
+<section>
+  <span class="snum">05 — Business findings</span>
+  <div class="col"><h2>Where the failures actually live</h2>
+  <p>Decomposing every late order into its three observable stages settles a question that otherwise
+    invites guessing. Of the roughly nineteen extra median days on a late delivery,
+    <strong>seventeen are carrier transit</strong> and 1.3 is seller handoff. Payment approval is
+    noise.</p>
+  <p>That points the geography analysis at distance rather than administration — and the map makes it
+    obvious.</p></div>
+
+  <figure><img src="FIG:q11_map" alt="Two maps of Brazil showing median delivery time and late-delivery rate by zip code prefix, both radiating outward from São Paulo">
+    <figcaption>São Paulo holds 42% of customers but <b>71% of sellers</b>; the top three states
+      supply 87% of all orders. Across states, median seller-to-customer distance correlates
+      <b>+0.87</b> with delivery time and <b>−0.64</b> with review score. Orders travelling over
+      2,000 km take 18.3 days against 4.9 for local ones, and pay 22.7% of their value in freight
+      versus 11.9%.</figcaption></figure>
+
+  <div class="col">
+  <h3>One state breaks the rule</h3>
+  <p>Distance explains almost everything — and completely fails on <strong>Rio de Janeiro</strong>,
+    which sits closer to its sellers than Paraná (394 km against 426) yet runs a
+    <strong>13.5% late rate against Paraná's 4.9%</strong> on the platform's second-largest market.</p>
+  <p>Decomposing the 1.62-day gap: <strong>72% is carrier transit, 3% is seller handoff.</strong>
+    Orders <em>into</em> Rio run 13.5% late; orders shipped <em>out of</em> Rio by Rio sellers run
+    9.1%. Rio's sellers are fine — it is a destination-side last-mile problem, and it is worst in the
+    periphery, not the capital: São Gonçalo 24.9% late, Macaé 18.4%, against Rio city's 11.8%.</p>
+
+  <h3>The worst two months were not a demand shock</h3>
+  <p>February–March 2018 are the worst months in the dataset — 21.4% late, 3.74 stars — and they are
+    three months after Black Friday. Order volume rose only <strong>7.8%</strong>. Carrier transit
+    rose 1.89 days while seller handoff held flat, <strong>all twelve measurable states worsened</strong>,
+    and <strong>86% of sellers degraded simultaneously</strong>.</p>
+  <p>When nearly every seller in the country gets worse at once while their own handoff times hold
+    steady, it is a shared dependency failing. Both anomalies land on the same culprit.</p>
+  <p>There is a positive story attached: from April 2018 transit fell 6.9 → 6.5 → 5.9 → 5.3 → 4.9
+    days. Olist fixed it and kept going. The lever works; they have pulled it before.</p></div>
+
+  <figure><img src="FIG:q10_anomalies" alt="Left: state late rate against distance with Rio de Janeiro as an outlier. Right: carrier transit and seller handoff time by month with February to March 2018 highlighted">
+    <figcaption><b>Two anomalies, one answer.</b> Rio breaks the distance relationship (left), and
+      the Feb–Mar 2018 collapse sits entirely in the carrier leg while seller handoff is untouched
+      (right).</figcaption></figure>
+</section>
+
+<section>
+  <span class="snum">06 — Root cause</span>
+  <div class="col"><h2>What actually drives a one-star review</h2>
+  <p>A logistic model of P(1-star) across 95,978 delivered orders, with continuous terms standardised
+    so effects are comparable. It separates three things the raw data confounds: breaking the promise,
+    the absolute wait regardless of promise, and everything else.</p></div>
+
+  <figure><img src="FIG:q6_odds_ratios" alt="Odds ratios for receiving a one-star review, with multiple sellers in an order far larger than any other factor">
+    <figcaption>Distance, freight burden and order value are all statistically real and all an order
+      of magnitude smaller than the top factors. Note <b>days of slack left</b> sitting below 1.0 —
+      the buffer is measurably protective, exactly as the cliff predicts.</figcaption></figure>
+
+  <div class="col">
+  <h3>The largest single driver was not on our list</h3>
+  <p>An order split across multiple sellers is <strong>five times more likely</strong> to receive a
+    one-star review, controlling for everything else including lateness. An odds ratio that large is
+    suspicious, so we tried to break it four ways.</p>
+  <ul>
+    <li><strong>Controlling for lateness:</strong> among <em>on-time</em> orders, multi-seller runs
+      36.0% one-star against 6.4% — a 5.6× gap.</li>
+    <li><strong>Same basket, different split:</strong> holding item count fixed at 2, 3, 4 and 5
+      items, multi-seller loses ~0.9 stars every time. It is the seller count, not the item count.</li>
+    <li><strong>The text confirms the mechanism:</strong> <em>"only part arrived"</em> appears in
+      29.6% of multi-seller one-stars against 7.5% otherwise.</li>
+    <li><strong>The smoking gun:</strong> multi-seller orders are recorded as delivered
+      <em>faster</em> (7.9 vs 10.3 days) and late <em>less</em> often. That is backwards — unless the
+      timestamp is capturing the first parcel rather than the last.</li>
+  </ul>
+  <p class="pull">Olist stores one delivery date per order. A multi-seller order ships as several
+    parcels — so it is marked complete, and surveyed, when the first one lands.</p>
+  <p>The customer is asked to rate a finished order while holding half of one.</p></div>
+
+  <figure><img src="FIG:q6_multiseller" alt="One-star rate by seller count and delivery outcome, showing multi-seller orders failing even when delivered on time">
+    <figcaption>1.3% of orders produce 4.8% of one-star reviews. In absolute terms that is ~342
+      excess one-stars — <b>the best return per order touched in the dataset</b>, and a notification
+      change rather than a capital project.</figcaption></figure>
+
+  <div class="col">
+  <h3>The honest accounting</h3>
+  <p>It would be convenient to conclude that delivery explains everything. It does not.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Source of 1-star reviews</th><th class="num">Count</th><th class="num">Share</th></tr></thead>
+    <tbody>
+      <tr><td>Delivered late</td><td class="num">3,652</td><td class="num">31.0%</td></tr>
+      <tr><td>Never arrived at all</td><td class="num">2,089</td><td class="num">17.7%</td></tr>
+      <tr><td><strong>Delivered on time — and still one star</strong></td><td class="num">6,033</td><td class="num">51.2%</td></tr>
+    </tbody></table></div>
+  <p><strong>48.8% of one-star reviews are a delivery failure of one kind or another. The other 51.2%
+    arrived on time and the customer was unhappy anyway.</strong> The promise is the biggest single
+    lever available. It is not the whole story, and a report that claimed otherwise would be
+    overselling.</p>
+  <p>Two things sit inside that residual. The multi-seller completion bug above is one. The other is
+    genuine product and expectation mismatch — <span class="mono">office_furniture</span> scores 3.75
+    even when delivered on time, more than half a star below the platform's on-time average, while
+    <span class="mono">books</span> reaches 4.64. We tested whether listing quality explained it
+    (photo count, description length — the fields the data dictionary flags as listing-quality
+    proxies) and found the effect real but negligible: under 0.1 stars across the full range.</p>
+  <p>The remaining 17.7% deserves separate ownership. <strong>2,963 orders never arrived at all</strong>
+    and carry a <strong>70.5% one-star rate</strong>. That is an inventory-accuracy problem, and no
+    amount of logistics improvement will reach it.</p></div>
+</section>
+
+<section>
+  <span class="snum">07 — From finding to policy</span>
+  <div class="col"><h2>Promise per order, not per platform</h2>
+  <p>The analysis says protect the promise and do not cut the buffer. But Olist's buffer is
+    <em>flat</em> — identical padding for a 160 km São Paulo order and a 2,400 km order to Pará. That
+    is the worst of both worlds: too slow where it is safe, too tight where it is not.</p>
+  <p>So rather than one promise for the platform, predict each order's delivery-time distribution at
+    checkout and promise a chosen quantile of it. Trained on 71,118 orders through April 2018, tested
+    on <strong>25,352 unseen orders</strong> from May–August. Every feature is knowable at checkout;
+    seller history is built from the training window only.</p></div>
+
+  <div class="band">
+    <div><div class="k">Same promise length</div><div class="v" style="color:var(--ok)">47%</div>
+      <div class="n">fewer late deliveries, on held-out data</div></div>
+    <div><div class="k">Olist today</div><div class="v">6.21%</div>
+      <div class="n">late, at a 21.4-day mean promise</div></div>
+    <div><div class="k">Risk-based</div><div class="v">3.28%</div>
+      <div class="n">late, at the same 21.4-day promise</div></div>
+  </div>
+
+  <figure><img src="FIG:q7_risk_scorer" alt="Left: promise length against late rate, with the risk-based curve below the flat-buffer curve. Right: actual late rate by predicted risk decile">
+    <figcaption><b>Down and to the left is better.</b> The risk-based curve sits below the flat-buffer
+      curve everywhere — at matched late rates it needs promises 1.3 to 2.9 days shorter. The buffer
+      is not cut, it is <b>reallocated</b>: taken off orders that never needed twelve days of
+      insurance and given to those that always did.</figcaption></figure>
+
+  <div class="col">
+  <div class="note"><b>Reported honestly:</b> the companion classifier that flags at-risk orders under
+    Olist's <em>existing</em> promises reaches ROC-AUC 0.69. That is useful for prioritising a
+    call list — the riskiest 30% of orders contain 56% of all late deliveries — but it is not a
+    precision instrument. The quantile model above carries the recommendation; the classifier only
+    orders the queue.</div>
+
+  <h3>And a scorecard that targets the right sellers</h3>
+  <p>A raw seller rating is unfair and unactionable in both directions: a seller shipping heavy
+    furniture to Pará is set up to score badly, and a 2.1-star seller with nine orders is a rounding
+    error beside a 3.9-star seller with nine hundred. So each seller is benchmarked against
+    <strong>their own mix</strong> — the platform average for the same categories at the same
+    distances — then ranked by <strong>stars lost</strong>, which is volume × shortfall.</p>
+  <p>The spread survives the control: <strong>0.75 stars wide</strong> from the 10th to the 90th
+    percentile after adjusting for what sellers sell and how far they ship. And the mechanism is one
+    they control — mix-adjusted performance correlates <span class="mono">−0.37</span> with handoff
+    time, and the worst decile hands off in 3.0 days against the best decile's 1.1.</p>
+  <p>Two findings make this immediately actionable: <strong>seller size is entirely uncorrelated with
+    quality</strong> (<span class="mono">r = −0.011</span>), and the <strong>top 100 sellers control
+    55% of revenue while performing only averagely</strong>. A hundred conversations reach half the
+    platform.</p></div>
+
+  <figure><img src="FIG:q8_seller_scorecard" alt="Scatter of sellers by order volume against stars above or below their benchmark, with the intervention list circled">
+    <figcaption>The twenty circled sellers are 2.5% of scored sellers but account for <b>39% of all
+      stars lost</b> to seller underperformance. The worst carries 201 orders at 2.65 stars against a
+      4.05 benchmark — and takes <b>9.6 days</b> to hand a parcel to the carrier against a platform
+      median under 2.</figcaption></figure>
+</section>
+
+<div class="col">
+<section>
+  <span class="snum">08 — The number nobody is looking at</span>
+  <h2>Only 3.1% of customers ever come back</h2>
+  <p>Across 96,096 people and 99,441 orders, just <strong>2,997 customers ever placed a second
+    order</strong>. Restricting to a cohort with at least 180 days of observable follow-up, the return
+    rate is 3.79% — and a one- or two-star first order returns at 3.43% against 4.06% for a five-star
+    one, a 15.6% relative gap.</p>
+  <p>That differential is directionally real, but the base rate is the finding.
+    <strong>Olist re-acquires almost its entire customer base every year.</strong> Repeat buyers
+    spend 1.89× more over their lifetime and are 3.1% of customers driving 5.7% of revenue.
+    Satisfaction moves retention, but nowhere near enough to save it on its own.</p>
+  <p>Everything above is about defending a transaction. This number asks whether there is a business
+    being built on top of them, and the data says: not yet.</p>
+</section>
+
+<section>
+  <span class="snum">09 — Recommendations</span>
+  <h2>What Olist should do</h2>
+
+  <ol class="rec">
+    <li><h4>Promise per order, not per platform</h4>
+      <p>Replace the flat buffer with a predicted delivery-time quantile per order. Demonstrated on
+        25,352 held-out orders: <strong>47% fewer late deliveries at an identical mean promise
+        length</strong>, or the same lateness with promises 1.3–2.9 days shorter.</p>
+      <p><span class="tag">HIGH CONFIDENCE</span><span class="mono">held-out test</span></p></li>
+
+    <li><h4>Do not mark an order delivered — or fire the survey — until the last parcel lands</h4>
+      <p>The single largest driver of one-star reviews is a data-model artifact. Multi-seller orders
+        run 36% one-star even when on time. A notification and timestamp change, not a capital
+        project.</p>
+      <p><span class="tag">HIGH CONFIDENCE</span><span class="mono">~342 excess 1-stars/yr</span></p></li>
+
+    <li><h4>Route pre-delivery one-star reviews into live recovery</h4>
+      <p>8,446 customers report non-receipt while their order is still in flight. Treat those as
+        support tickets, not sentiment. Note the regression discontinuity says this will
+        <em>not</em> raise the score — the value is recovering the customer, not the metric.</p>
+      <p><span class="tag med">MEDIUM CONFIDENCE</span><span class="mono">recovery, not score lift</span></p></li>
+
+    <li><h4>Set a seller SLA on handoff time, targeted by stars lost</h4>
+      <p>Handoff is the part of the delay sellers control, and it separates the best decile from the
+        worst by nearly two days. Start with the twenty sellers carrying 39% of all stars lost —
+        ranked by impact, not by rating.</p>
+      <p><span class="tag">HIGH CONFIDENCE</span><span class="mono">20 named sellers</span></p></li>
+
+    <li><h4>Give non-delivery its own owner</h4>
+      <p>2,963 orders never arrive and carry a 70.5% one-star rate — 2,089 one-star reviews that no
+        delivery improvement can reach. This is inventory accuracy and seller-listing hygiene, and it
+        is being managed as though it were logistics.</p>
+      <p><span class="tag">HIGH CONFIDENCE</span><span class="mono">2,089 unreachable 1-stars</span></p></li>
+
+    <li><h4>Attack the carrier leg, starting with Rio's last mile</h4>
+      <p>87% of excess delay is transit, not sellers. Rio is the nearest-term, highest-density
+        target: a 13.5% late rate at short distance on the second-biggest market, concentrated in the
+        periphery. Regional fulfilment capacity for the North and Northeast is the structural version
+        of the same fix.</p>
+      <p><span class="tag med">MEDIUM CONFIDENCE</span><span class="mono">structural</span></p></li>
+  </ol>
+
+  <div class="kill">
+    <h3>Three recommendations this analysis killed</h3>
+    <ol>
+      <li><b>"Your delivery estimates are inaccurate — tighten them."</b> The asymmetry says
+        earliness buys 0.10 stars and lateness costs 1.45. And Olist already ran this experiment:
+        the promise fell 39 days to 13 while the late rate tripled.</li>
+      <li><b>"Delay the survey so customers aren't rating undelivered orders."</b> Intuitive, and
+        wrong. The regression discontinuity at the two-day trigger returns +0.15 stars (SE 0.19).
+        The anger is real; moving the survey moves nothing.</li>
+      <li><b>"Focus on your worst-rated sellers."</b> Raw rating targets small sellers with noisy
+        averages. Benchmarking against each seller's own category and distance mix, then ranking by
+        stars lost, targets the ones whose underperformance actually reaches customers.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <span class="snum">10 — Limitations</span>
+  <h2>What this analysis cannot tell you</h2>
+  <p>This is observational data. We identify associations; only the regression discontinuity in
+    section 4 supports a causal reading, and it is a null result. The driver model ranks factors by
+    conditional association, not by proven effect.</p>
+  <p>Reviews arrive for 99.4% of orders, so selection into reviewing is not a serious concern — but
+    the survey trigger means late orders are systematically rated earlier in their lifecycle than
+    on-time ones, which we quantify rather than correct.</p>
+  <p>The dataset ends abruptly in August 2018, so the encouraging trend in the final months cannot be
+    confirmed as durable. Distances are great-circle between zip-prefix centroids, not routed road
+    distance, and roughly 1.3% of orders cannot be located at all. Seller and customer identifiers
+    are hashed, so no individual seller can be verified outside the data.</p>
+  <p>Finally, the risk model is trained and tested inside a single platform's operating regime. It
+    predicts what delivery times <em>were</em> under Olist's existing carrier mix; it does not
+    forecast what they would become if that mix changed.</p>
+</section>
+</div>
+
+<footer>
+  <b>Method and reproducibility.</b> All figures and statistics regenerate from the accompanying
+  notebook, which runs top to bottom without manual steps. Statistical routines — OLS with HC1 robust
+  errors, the regression discontinuity, and the logistic driver model by IRLS — are implemented in
+  numpy rather than statsmodels, whose 0.14.4 release fails to import against scipy ≥ 1.16.
+  <br><br>
+  <b>Data.</b> Brazilian E-Commerce Public Dataset by Olist, published on Kaggle under CC BY-NC-SA.
+  Approximately 100,000 orders placed between September 2016 and October 2018, anonymised by Olist
+  before release. Real commercial data released for public analysis, not generated for this exercise.
+</footer>
+</div>

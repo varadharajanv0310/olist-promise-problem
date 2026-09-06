@@ -1,0 +1,424 @@
+pandas 2.3.2 | numpy 2.2.6 | matplotlib 3.10.6
+running in Colab: False
+data directory: D:\Data Analytics Hackathon - Gradient\data\raw
+  orders                    99,441 rows x 8 cols
+  order_items              112,650 rows x 6 cols
+  order_payments           103,886 rows x 5 cols
+  order_reviews            100,000 rows x 7 cols
+  customers                 99,441 rows x 5 cols
+  products                  32,951 rows x 9 cols
+  sellers                    3,095 rows x 4 cols
+  geolocation            1,000,163 rows x 5 cols
+  category_translation          71 rows x 2 cols
+chart style set
+KEY UNIQUENESS
+  orders        99,441 rows     99,441 unique order_id   dup    0
+  customers     99,441 rows     99,441 unique customer_id   dup    0
+  products      32,951 rows     32,951 unique product_id   dup    0
+  sellers        3,095 rows      3,095 unique seller_id   dup    0
+  reviews      100,000 rows     99,173 unique review_id   dup  827  <-- NOT UNIQUE
+
+GRAIN vs ORDERS
+  orders present in order_items      98,666 / 99,441   MISSING 775
+  orders present in order_payments   99,440
+  orders present in order_reviews    99,441
+  orders with >1 item                 9,803
+  orders with >1 SELLER               1,278
+  orders with >1 payment record       2,961
+  orders with >1 review                 555
+
+GEOLOCATION IS NOT A LOOKUP TABLE
+  1,000,163 rows over 19,015 zip prefixes  =  52.6 rows per prefix
+  joining this directly would multiply every order by ~53.
+MISSINGNESS
+
+  orders:
+    order_approved_at                    160  ( 0.16%)
+    order_delivered_carrier_date       1,783  ( 1.79%)
+    order_delivered_customer_date      2,965  ( 2.98%)
+
+  products:
+    product_category_name                610  ( 1.85%)
+    product_name_lenght                  610  ( 1.85%)
+    product_description_lenght           610  ( 1.85%)
+    product_photos_qty                   610  ( 1.85%)
+    product_weight_g                       2  ( 0.01%)
+    product_length_cm                      2  ( 0.01%)
+    product_height_cm                      2  ( 0.01%)
+    product_width_cm                       2  ( 0.01%)
+
+  reviews:
+    review_comment_title              88,285  (88.28%)
+    review_comment_message            58,247  (58.25%)
+
+
+ORDER STATUS
+  delivered       96,478  97.02%
+  shipped          1,107   1.11%
+  canceled           625   0.63%
+  unavailable        609   0.61%
+  invoiced           314   0.32%
+  processing         301   0.30%
+  created              5   0.01%
+  approved             2   0.00%
+
+  2,963 orders never reached the customer.
+  They still get reviewed - and they are a separate failure mode from late delivery (§8).
+  C1 reviews deduped                             100,000 -> 99,441  (-559)
+  C3 categories hand-added                       ['pc_gamer', 'portateis_cozinha_e_preparadores_de_alimentos']
+  C3 products left 'unknown'                     610
+  C4 geo readings dropped (outside Brazil)       42
+  C4 geolocation rows -> points                  1,000,163 -> 19,010
+order-level table: 99,441 rows (must equal 99,441)  unique: True
+analytical table: 99,441 rows x 57 columns
+  delivered with timings   96,476
+  with a distance          98,176
+  inside the trend window  99,092  (349 excluded as edge artifacts)
+Sep 2016: 4 orders | Dec 2016: 1 | Sep 2018: 16 | Oct 2018: 4
+mean 4.072 | median 5 | 1-2 star 15.1%
+77% of 1-star reviewers write a comment vs 36% of 5-star -> text analysis is viable
+exactly where it matters (§10).
+       actual_days  promised_days  gap_days
+count     96476.00       96476.00  96476.00
+mean         12.56          23.74    -11.18
+std           9.55           8.76     10.19
+min           0.53           2.01   -146.02
+5%            3.02          10.48    -25.94
+25%           6.77          18.33    -16.24
+50%          10.22          23.23    -11.95
+75%          15.72          28.41     -6.39
+95%          29.28          38.42      3.82
+max         209.63         155.14    188.98
+
+LATE 8.11%   ON TIME OR EARLY 91.89%
+median slack: 11.9 days of padding
+Jan 2017  ->  Aug 2018
+  orders / month                800 ->        6,512   ( +714.0%)
+  revenue / month           120,313 ->      854,686   ( +610.4%)
+  avg order value            152.49 ->       132.47   (  -13.1%)
+  mean review score           4.048 ->        4.247   (   +4.9%)
+  1-star rate %               12.62 ->         8.49   (  -32.7%)
+  LATE RATE %                  3.07 ->        10.39   ( +238.9%)
+Volume 8x. Revenue 7x. Satisfaction essentially flat — and average order value FELL 13%,
+so the growth is more orders, not bigger ones.
+  volume(t) vs late-rate(t+0)   r = +0.550
+  volume(t) vs late-rate(t+1)   r = +0.420
+  volume(t) vs late-rate(t+2)   r = +0.300
+
+The correlation is strongest at lag 0: capacity breaks in the same month demand spikes.
+late_bucket     n  score  pct_1star
+ 15d+ early 29599   4.31       6.89
+7-15d early 41709   4.30       6.57
+ 3-7d early 12598   4.22       6.93
+ 0-3d early  4743   4.12       8.16
+  0-3d late  2662   3.75      14.20
+  3-7d late  1819   2.30      53.66
+ 7-15d late  1962   1.73      68.55
+  15d+ late  1384   1.72      68.86
+
+late orders are 8.1% of deliveries but 31.0% of all 1-star reviews
+15 days early instead of 3 buys +0.10 stars. Three days late to seven costs -1.45.
+  promise  39.0d -> 13.4d   (-25.6d)
+  actual   10.7d -> 7.0d   (-3.7d)
+  LATE     3.1% -> 10.4%
+
+The promise was cut by 25 days while delivery improved by under 4. The late rate tripled.
+CATEGORY: penalty is negative in 26 of 26 (range -2.24 to -1.22)
+STATE: penalty is negative in 21 of 21 (range -2.36 to -1.40)
+FIRST STAGE - does crossing +2 days flip who gets surveyed early?
+  gap (-2, 0]      n= 3,012   surveyed pre-delivery   4.9%
+  gap (0, 1]       n= 1,292   surveyed pre-delivery   5.6%
+  gap (1, 2]       n=   825   surveyed pre-delivery  12.6%
+  gap (2, 3]       n=   545   surveyed pre-delivery  73.6%
+  gap (3, 4]       n=   500   surveyed pre-delivery  82.0%
+  gap (4, 6]       n=   900   surveyed pre-delivery  89.7%
+  gap (6, 10]      n= 1,465   surveyed pre-delivery  99.5%
+
+RD ESTIMATE AT THE CUTOFF
+   bandwidth       n    effect      SE       t   95% CI
+        0.75   1,023     0.047   0.214    0.22   [-0.37, +0.47]
+        1.00   1,370     0.151   0.188    0.80   [-0.22, +0.52]
+        1.25   2,066     0.106   0.180    0.59   [-0.25, +0.46]
+        1.50   2,544     0.027   0.166    0.16   [-0.30, +0.35]
+        2.00   3,162    -0.111   0.124   -0.90   [-0.36, +0.13]
+
+PLACEBO CUTOFFS - if +2 were special, only it should show an effect
+  cutoff  -3   effect  -0.119  SE 0.106  t  -1.12
+  cutoff  -2   effect  -0.144  SE 0.115  t  -1.25
+  cutoff  -1   effect  -0.000  SE 0.115  t  -0.00
+  cutoff   0   effect  -0.040  SE 0.113  t  -0.35
+  cutoff   1   effect  +0.002  SE 0.139  t   0.02
+  cutoff   2   effect  +0.151  SE 0.188  t   0.80   <-- TRUE CUTOFF
+  cutoff   3   effect  +0.157  SE 0.276  t   0.57
+  cutoff   4   effect  -0.149  SE 0.264  t  -0.56
+
+Raw pre/post gap: +1.50 stars.  RD effect: +0.15 (SE 0.19).
+The 95% CI rules out anything above 0.52 stars.
+=> HYPOTHESIS REJECTED. The anger is real, not an artifact of when we asked.
+1-star reviews with text:  pre-delivery 2,590   post-delivery 5,002
+
+  theme                       PRE     POST    lift
+  did not receive it        51.2%    15.0%   3.42x
+  late                      10.5%     3.5%   2.98x
+  wrong or broken            2.0%    12.7%   0.16x
+  only part arrived          1.0%     8.5%   0.11x
+
+Same score, completely different problem. The survey is not a broken measurement -
+it is an UNREAD DISTRESS SIGNAL: 8,446 customers reporting non-receipt while the order
+is still in flight and still recoverable. The fix is not to delay it. It is to ACT on it.
+   dbin     n  delivery  late  score  freight  value  freight_pct
+    <50 11722      4.90  6.48   4.27    13.13 110.10        11.92
+ 50-150 10263      6.11  6.33   4.27    15.09 124.74        12.10
+150-300  9243      8.95  6.40   4.21    19.68 132.19        14.89
+300-600 31507     10.33  7.76   4.12    22.40 133.77        16.75
+ 600-1k 17898     12.53  8.47   4.11    24.81 139.54        17.78
+1k-1.5k  6577     14.91 10.10   4.04    29.77 167.57        17.77
+1.5k-2k  3158     16.87 12.06   4.04    40.03 178.25        22.46
+    2k+  5608     18.25 13.64   3.96    39.85 175.73        22.68
+
+across states, median distance correlates with:
+    delivery time    r = +0.868
+    late rate        r = +0.607
+    review score     r = -0.637
+    freight burden   r = +0.870
+                    n      km  handoff  transit  total   late  score
+customer_state                                                      
+SP              40407  163.56     1.77     4.40   7.21   5.90   4.24
+RJ              12303  394.10     1.87     8.34  12.04  13.47   3.95
+PR               4899  425.95     1.83     7.17  10.42   4.92   4.23
+MG              11318  490.38     1.82     7.19  10.31   5.61   4.18
+SC               3538  528.07     1.86     9.46  13.01   9.72   4.12
+ES               1984  762.02     1.98     9.97  13.63  12.10   4.04
+RS               5327  855.49     1.85    10.00  13.18   7.11   4.18
+
+RJ vs PR at the same distance (394 vs 426 km): RJ is +1.62 days slower
+   seller handoff  +0.04d  (2%)
+   carrier transit +1.16d  (72%)
+
+   INTO RJ      late 13.47%
+   OUT OF RJ    late  9.11%   <- Rio's SELLERS are fine
+
+=> a destination-side last-mile problem, and it is worst in the periphery:
+                         n   late
+customer_city                    
+sao goncalo            385  24.94
+macae                  227  18.50
+volta redonda          227  18.06
+campos dos goytacazes  232  14.66
+nova iguacu            422  13.51
+4,134 zip prefixes with 8+ orders, sized by volume.
+platform on-time average: 4.284
+
+WEAK EVEN WHEN DELIVERED ON TIME (product / listing / expectation problem):
+                   orders  score  score_ontime  product_gap    price
+primary_category                                                    
+office_furniture     1270  3.609         3.746       -0.537  216.481
+home_confort          377  3.902         4.087       -0.197  157.782
+audio                 346  3.824         4.110       -0.173  144.796
+home_construction     480  4.000         4.124       -0.159  175.064
+bed_bath_table       9324  3.957         4.132       -0.151  111.210
+
+FINE ON TIME, DRAGGED DOWN BY DELIVERY (logistics problem):
+                     orders  score  score_ontime  delivery_drag    late
+primary_category                                                       
+audio                   346  3.824         4.110         -0.287  13.081
+unknown                1416  3.929         4.190         -0.261   8.984
+musical_instruments     624  4.170         4.421         -0.251   8.896
+baby                   2835  4.038         4.289         -0.251   9.279
+consoles_games         1057  4.045         4.294         -0.248   8.193
+              orders   value  installments  approve_h  handoff  transit  total  not_delivered  score
+payment_type                                                                                        
+boleto         19784  121.93          1.00      29.07     1.59     7.14  11.34           3.00   4.07
+credit_card    74975  144.01          3.55       0.27     1.88     7.10  10.01           2.87   4.07
+debit_card      1527  120.81          1.00       0.85     1.60     6.13   8.51           2.82   4.16
+voucher         3151   95.24          1.14       0.28     1.86     7.13  10.23           5.52   3.99
+
+boleto approval takes 29.1h vs 0.27h for a card (+1.20 days)
+boleto total delivery is +1.33 days, so 91% of the gap is the
+approval wait alone - burned before the seller is even told to ship.
+
+raw score spread across methods       0.176 stars
+spread among ON-TIME orders only      0.098 stars
+=> most of the apparent payment effect is delivery wearing a disguise.
+
+The real exception is vouchers: 5.52% never delivered vs 2.87% for cards.
+  DELIVERED       n= 96,478  mean 4.14  1-star 10.04%
+  NEVER ARRIVED   n=  2,963  mean 1.75  1-star 70.50%
+
+  never-delivered orders are 2.98% of reviews but 17.74% of 1-stars
+  -> 2,089 one-star reviews NO delivery improvement can reach.
+                 n  mean
+order_status            
+shipped       1107  2.00
+canceled       625  1.80
+unavailable    609  1.53
+invoiced       314  1.65
+processing     301  1.28
+created          5  1.80
+approved         2  2.50
+n = 95,978   base 1-star rate 10.05%   pseudo-R2 0.168
+
+          term    OR    lo    hi      z
+  multi_seller 4.993 4.391 5.677 24.542
+          wait 1.501 1.442 1.563 19.863
+     days_late 1.484 1.442 1.528 26.819
+         items 1.266 1.243 1.290 24.877
+     log_value 1.092 1.055 1.130  5.040
+   pay_voucher 1.088 0.952 1.243  1.240
+       handoff 1.085 1.063 1.108  7.715
+     freight_r 1.056 1.022 1.092  3.295
+        log_km 0.915 0.886 0.945 -5.424
+pay_debit_card 0.894 0.730 1.095 -1.087
+    pay_boleto 0.883 0.832 0.937 -4.092
+    days_early 0.863 0.838 0.889 -9.865
+TEST 1 - raw effect
+           n  score    one  late  delivery
+multi                                     
+False  95203   4.16   9.69  8.20     10.25
+True    1275   2.83  36.47  1.41      7.93
+
+TEST 2 - does it survive controlling for lateness?
+  ON-TIME ONLY: single 6.39% 1-star vs multi 36.04% (5.6x)
+
+TEST 3 - is it SELLERS, or just more items? (hold item count fixed)
+                                      n  score    one
+n_items kind                                         
+2.0     multi-seller                957   2.87  35.21
+        one seller, several items  6435   3.79  18.28
+3.0     multi-seller                203   2.86  36.45
+        one seller, several items  1103   3.62  21.67
+4.0     multi-seller                 68   2.38  48.53
+        one seller, several items   427   3.50  24.82
+5.0     multi-seller                 18   1.94  61.11
+        one seller, several items   175   3.62  21.14
+
+  same basket size, split across sellers: -0.92 stars
+
+TEST 4 - what do the written reviews say?
+  only part arrived    multi  24.3%   single   5.6%   4.31x
+  wrong or broken      multi   2.9%   single   8.7%   0.33x
+
+Note test 1: multi-seller orders are recorded as delivered FASTER and late LESS often.
+That is backwards - unless the timestamp is capturing the first parcel, not the last.
+  total 1-star reviews              11,775   100.0%
+    delivered LATE                   3,652    31.0%
+    NEVER ARRIVED                    2,089    17.7%
+    delivered ON TIME                6,033    51.2%
+
+  48.8% of 1-star reviews are a delivery failure of some kind.
+  The other 51.2% arrived on time and the customer was furious anyway.
+train 71,118  (2016-09-15 -> 2018-04-30)
+test  25,352  (2018-05-01 -> 2018-08-29)
+
+Olist today:  mean promise 21.4d   late 6.21%
+risk-based q=0.80:  mean promise  14.1d   late 13.92%
+risk-based q=0.85:  mean promise  15.5d   late 10.50%
+risk-based q=0.90:  mean promise  17.3d   late 7.32%
+risk-based q=0.95:  mean promise  21.4d   late 3.28%
+
+*** At the SAME promise length (21.4d vs 21.4d):
+    late rate 3.28% vs 6.21%  ->  47% FEWER LATE ORDERS
+    The buffer is not cut - it is REALLOCATED, off the orders that never needed it.
+at a matched late rate, how long must each promise be?
+  13.92% late:  risk-based  14.1d   |   flat  15.3d   -> 1.3d shorter
+  10.50% late:  risk-based  15.5d   |   flat  17.3d   -> 1.8d shorter
+   7.32% late:  risk-based  17.3d   |   flat  19.3d   -> 2.0d shorter
+   3.28% late:  risk-based  21.4d   |   flat  24.3d   -> 2.9d shorter
+ROC-AUC 0.6925   base late rate 6.21%
+
+riskiest decile: 13.5% late (2.2x base)
+contacting the riskiest 30% reaches 882 of 1,575 late orders (56%)
+
+HONEST READ: AUC 0.69 is useful for triage, not precision. The quantile model above
+carries the recommendation; this one only prioritises a call list.
+788 sellers with 20+ reviewed orders, covering 87.6% of volume
+
+  raw rating spread   p10 3.76  p90 4.50
+  MIX-ADJUSTED gap    p10 -0.36  p90 +0.40
+  => 0.75 stars of spread REMAINS after controlling
+     for what they sell and how far they ship. Sellers genuinely differ.
+
+TOP 10 INTERVENTION TARGETS
+                 orders  score  expected   gap  stars_lost   late  exp_late  handoff state
+2eb70248d66e...     201   2.65      4.05 -1.40      281.88  13.98      7.76     9.60    SP
+6560211a19b4...    1830   3.93      4.06 -0.12      221.99   6.46      8.09     0.90    SP
+cc419e0650a3...    1685   4.07      4.19 -0.12      207.16   6.07      8.30     1.99    SP
+1ca7077d890b...     115   2.32      3.96 -1.63      187.88  22.22      8.02     5.78    SP
+4a3ca9315b74...    1723   3.84      3.94 -0.10      175.69  10.78      9.21     1.83    SP
+7c67e1448b00...     975   3.48      3.64 -0.16      154.88  10.04      9.01    11.00    SP
+897060da8b9a...     313   3.61      4.02 -0.40      125.73  12.00      7.88     2.18    SP
+88460e8ebdec...     234   3.47      3.98 -0.51      118.54  20.69      8.00     6.23    PR
+1835b56ce799...     405   3.64      3.93 -0.29      116.98  12.28      9.04     1.24    SP
+a49928bcdf77...      90   2.97      4.16 -1.20      107.84  25.84      7.86     6.28    SP
+
+WHAT SEPARATES THEM:
+           sellers   gap   late  handoff
+tier                                    
+worst 10%       79 -0.64  15.02     3.01
+below med      315 -0.12   9.11     1.79
+above med      315  0.19   5.81     1.24
+best 10%        79  0.50   4.01     1.10
+
+  gap vs handoff time  r = -0.373
+  gap vs seller SIZE   r = -0.011  <- size is NOT quality
+==============================================================================
+REPEAT CUSTOMERS
+==============================================================================
+  people 96,096   orders 99,441   repeat rate 3.12%
+
+  cohort with 180+ days to return: 68,940   base return rate 3.79%
+               size  mean
+review_score             
+1              8978  3.43
+2              2378  3.41
+3              5985  3.39
+4             13416  3.51
+5             38183  4.06
+
+  1-2 star first order -> 3.43% return
+  5 star first order   -> 4.06% return
+
+  HONEST READ: directionally real, but the BASE RATE is the finding. At ~3-4%, Olist
+  re-acquires nearly its entire customer base every year. Satisfaction moves retention,
+  but nowhere near enough to save it.
+==============================================================================
+FREIGHT ECONOMICS
+==============================================================================
+  single-item orders: 88,100     R2 = 0.600
+    weight elasticity   +0.159    -> 10x heavier costs 1.44x more
+    distance elasticity +0.194    -> 10x farther costs 1.56x more
+  => both far below 1: freight is heavily COMPRESSED against real cost, so short-haul
+     orders subsidise long-haul ones.
+
+  yet remote states still pay a premium beyond distance: 47% in RO
+  They wait longest, pay most, on the smallest baskets.
+==============================================================================
+REVIEW TEXT - what the words add to the score
+==============================================================================
+  41,562 reviews with text (41.8%)
+
+  theme                         1        2        3        4        5
+  never arrived             29.5%    16.2%     9.6%     3.3%     1.4%
+  partial delivery           5.5%     6.7%     5.3%     1.6%     0.3%
+  late (complaint)           6.3%     8.9%     7.2%     3.9%     0.9%
+  wrong / broken             7.8%     8.0%     5.2%     2.1%     0.6%
+  no seller contact          1.0%     0.2%     0.2%     0.1%     0.0%
+  praise                     4.3%     5.7%     8.5%    22.2%    42.1%
+
+  The themes separate the scores far more sharply than the score separates itself.
+    'never arrived' runs 29.5% at 1 star -> 1.4% at 5 star
+    'no seller contact' runs 1.0% at 1 star -> 0.0% at 5 star
+  Seller silence is a 1-star signature, not a 3-star one.
+==============================================================================
+ANOMALY REGISTER
+==============================================================================
+        6  orders marked canceled but carrying a delivery timestamp
+       23  orders delivered BEFORE the carrier collected them
+       64  delivered orders taking over 100 days
+    3,159  orders where freight exceeds the item price
+       13  orders where freight is over 5x the item price
+      775  orders with no line items at all
+        3  orders whose payment total is R$0
+
+  longest delivery in the dataset: 210 days
+  the 100+ day tail averages 2.77 stars
