@@ -73,6 +73,9 @@ a:hover{color:#b4541f}
       <a href="#onestar" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">1-star</a>
       <a href="#leadtime" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">Lead time</a>
       <a href="#queue" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">Seller queue</a>
+      <a href="#map" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">Geography</a>
+      <a href="#drivers" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">Drivers</a>
+      <a href="#words" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">Words</a>
     </div>
     <div style="flex:none;display:flex;align-items:center;gap:8px">
       <a href="https://github.com/varadharajanv0310/olist-promise-problem" target="_blank" rel="noopener" class="mono ghlink" style="display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.14em;padding:9px 12px;border:1px solid #d9d9d4;background:#fbfbfa;white-space:nowrap">
@@ -406,6 +409,100 @@ a:hover{color:#b4541f}
     <div style="margin-top:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
       <button class="allbtn" id="toggleAll"></button>
       <div class="mono" style="font-size:9px;letter-spacing:.1em;color:#8a8a86">STARS LOST = (EXPECTED − ACTUAL SCORE) × ORDERS</div>
+    </div>
+  </div>
+
+  <!-- ── 07 the map ─────────────────────────────────────────────────────── -->
+  <div id="map" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;scroll-margin-top:60px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
+      <div style="max-width:44ch">
+        <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#f2f2ef;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">07 — THE GEOGRAPHY</div>
+        <h2 style="margin:16px 0 0;font-size:clamp(24px,2.9vw,38px);line-height:1.08;letter-spacing:-.03em;font-weight:600">The whole country is<br><span style="color:#b6b6b1">downstream of one city.</span></h2>
+      </div>
+      <p style="margin:0;max-width:46ch;font-size:14px;line-height:1.6;color:#5c5c58;text-wrap:pretty">São Paulo holds 42% of customers but 71% of sellers. Every delivery metric then moves with distance from that cluster — across states, median distance correlates +0.87 with delivery time and −0.64 with review score.</p>
+    </div>
+    <div style="margin-top:32px;display:flex;gap:26px;flex-wrap:wrap">
+      <div style="flex:1 1 300px;min-width:0">
+        <div class="mono" style="font-size:9px;letter-spacing:.16em;color:#8a8a86;margin-bottom:10px">MEDIAN DELIVERY TIME · DARKER = SLOWER</div>
+        <div style="position:relative;border:1px solid #e2e2dd;background:#fbfbfa;aspect-ratio:1/1.06">
+          <canvas id="mapDays" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        </div>
+      </div>
+      <div style="flex:1 1 300px;min-width:0">
+        <div class="mono" style="font-size:9px;letter-spacing:.16em;color:#b4541f;margin-bottom:10px">LATE RATE · DARKER = WORSE</div>
+        <div style="position:relative;border:1px solid #e2e2dd;background:#fbfbfa;aspect-ratio:1/1.06">
+          <canvas id="mapLate" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        </div>
+      </div>
+      <div style="flex:1 1 300px;min-width:260px">
+        <div class="mono" style="font-size:9px;letter-spacing:.16em;color:#8a8a86;margin-bottom:10px">BY DISTANCE SHIPPED</div>
+        <div id="distBands"></div>
+        <div class="mono" style="margin-top:14px;padding:12px 14px;border:1px solid #111110;background:#f7f7f5;font-size:9px;letter-spacing:.1em;line-height:1.7;color:#5c5c58">RIO BREAKS THE RULE<br><span style="color:#111110">394 KM · 13.5% LATE</span><br>PARANÁ AT 426 KM RUNS 4.9%. 72% OF RIO'S EXTRA<br>DELAY IS CARRIER TRANSIT, 3% IS THE SELLER.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 08 the drivers ─────────────────────────────────────────────────── -->
+  <div id="drivers" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
+      <div style="max-width:44ch">
+        <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#fbfbfa;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">08 — THE DRIVERS</div>
+        <h2 style="margin:16px 0 0;font-size:clamp(24px,2.9vw,38px);line-height:1.08;letter-spacing:-.03em;font-weight:600">One factor is not<br><span style="color:#b6b6b1">like the others.</span></h2>
+      </div>
+      <p style="margin:0;max-width:46ch;font-size:14px;line-height:1.6;color:#5c5c58;text-wrap:pretty">A logistic model of P(1-star) across every delivered order, continuous terms standardised so effects compare directly. Splitting an order across sellers outweighs everything — including lateness.</p>
+    </div>
+    <div style="margin-top:32px;display:flex;gap:26px;flex-wrap:wrap">
+      <div style="flex:2 1 420px;min-width:0">
+        <div id="orRows"></div>
+        <div class="mono" style="margin-top:12px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:.12em;color:#b6b6b1">
+          <span>← LOWERS THE ODDS</span><span>ODDS RATIO FOR A 1-STAR REVIEW</span><span>RAISES THE ODDS →</span>
+        </div>
+      </div>
+      <div style="flex:1 1 280px;min-width:250px">
+        <div class="mono" style="font-size:9px;letter-spacing:.16em;color:#8a8a86">SPLIT ACROSS SELLERS — 1-STAR RATE</div>
+        <div id="msGrid" style="margin-top:12px;display:grid;grid-template-columns:auto 1fr 1fr;border:1px solid #111110;background:#fbfbfa"></div>
+        <div style="margin-top:14px;padding:14px 16px;border:1px solid #111110;background:#fbfbfa;font-size:13px;line-height:1.5;color:#5c5c58">Olist stores one delivery date per order, but a multi-seller order ships as several parcels. It is marked complete — and surveyed — when the <span style="color:#111110">first</span> one lands. Those orders are recorded as delivered <span style="color:#111110">faster</span> and late <span style="color:#111110">less</span> often, which is backwards until you see why.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 09 what the words say ──────────────────────────────────────────── -->
+  <div id="words" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;scroll-margin-top:60px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
+      <div style="max-width:44ch">
+        <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#f2f2ef;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">09 — WHAT THE WORDS SAY</div>
+        <h2 style="margin:16px 0 0;font-size:clamp(24px,2.9vw,38px);line-height:1.08;letter-spacing:-.03em;font-weight:600">The words separate<br><span style="color:#b6b6b1">what the score blurs.</span></h2>
+      </div>
+      <p style="margin:0;max-width:46ch;font-size:14px;line-height:1.6;color:#5c5c58;text-wrap:pretty">Four in ten reviews carry written text, and the themes discriminate far more sharply than the star rating does. Seller silence is a one-star signature, not a three-star one.</p>
+    </div>
+    <div style="margin-top:32px;display:flex;gap:26px;flex-wrap:wrap">
+      <div style="flex:2 1 440px;min-width:0;display:flex;align-items:flex-start">
+        <div class="mono" style="width:34px;height:280px;flex:none;position:relative;font-size:9px;color:#8a8a86;text-align:right">
+          <div style="position:absolute;right:8px;top:0;transform:translateY(-50%)">45%</div>
+          <div style="position:absolute;right:8px;top:33.3%;transform:translateY(-50%)">30</div>
+          <div style="position:absolute;right:8px;top:66.7%;transform:translateY(-50%)">15</div>
+          <div style="position:absolute;right:8px;top:100%;transform:translateY(-50%)">0</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="position:relative;height:280px;border-left:1px solid #d9d9d4;border-bottom:1px solid #111110;background:#f7f7f5">
+            <div style="position:absolute;left:0;right:0;top:33.3%;border-top:1px dashed #e7e7e3"></div>
+            <div style="position:absolute;left:0;right:0;top:66.7%;border-top:1px dashed #e7e7e3"></div>
+            <svg id="themeSvg" viewBox="0 0 1000 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"></svg>
+            <div id="themeMarks"></div>
+          </div>
+          <div class="mono" style="display:flex;font-size:9px;color:#8a8a86">
+            <div style="flex:1;text-align:center;padding-top:7px">1★</div><div style="flex:1;text-align:center;padding-top:7px">2</div>
+            <div style="flex:1;text-align:center;padding-top:7px">3</div><div style="flex:1;text-align:center;padding-top:7px">4</div>
+            <div style="flex:1;text-align:center;padding-top:7px">5</div>
+          </div>
+          <div id="themeLegend" class="mono" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:9px;letter-spacing:.1em;color:#5c5c58"></div>
+        </div>
+      </div>
+      <div style="flex:1 1 260px;min-width:240px">
+        <div class="mono" style="font-size:9px;letter-spacing:.16em;color:#8a8a86">BY ORDER VALUE</div>
+        <div id="priceBands" style="margin-top:12px"></div>
+        <div class="mono" style="margin-top:14px;padding:12px 14px;border:1px solid #d9d9d4;background:#f7f7f5;font-size:9px;letter-spacing:.1em;line-height:1.7;color:#5c5c58">EXPENSIVE ORDERS DISAPPOINT MORE OFTEN.<br>CHEAP ONES PAY FOR SHIPPING — THE CHEAPEST<br>FIFTH SPEND <span style="color:#111110">56% OF ORDER VALUE</span> ON FREIGHT.</div>
+      </div>
     </div>
   </div>
 
@@ -756,5 +853,113 @@ renderQueue();
 $('#top12Lost').textContent = fmt(Math.round(
   D.sellers.slice().sort((a, b) => b.lost - a.lost).slice(0, 12).reduce((s, r) => s + r.lost, 0)));
 
+/* ── 07 the map ──────────────────────────────────────────────────────────── */
+function drawMap(id, idx, hue) {
+  const c = document.getElementById(id);
+  if (!c || !c.clientWidth) return;
+  const dpr = Math.min(2, devicePixelRatio || 1), w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== Math.round(w * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  const ctx = c.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  const M = D.map;
+  const lo = [-74, -34], hi = [-34.8, 5.3];                     // Brazil bounding box
+  const vals = M.map(p => p[idx]).sort((a, b) => a - b);
+  const p2 = vals[Math.floor(vals.length * 0.03)], p98 = vals[Math.floor(vals.length * 0.97)];
+  const pad = 10, sc = Math.min((w - pad * 2) / (hi[0] - lo[0]), (h - pad * 2) / (hi[1] - lo[1]));
+  const ox = (w - (hi[0] - lo[0]) * sc) / 2, oy = (h - (hi[1] - lo[1]) * sc) / 2;
+  M.forEach(p => {
+    const x = ox + (p[0] - lo[0]) * sc, y = h - oy - (p[1] - lo[1]) * sc;
+    const t = Math.max(0, Math.min(1, (p[idx] - p2) / (p98 - p2 || 1)));
+    const s = 2.4 + Math.min(1, Math.sqrt(p[2]) / 26) * 4.4;
+    ctx.fillStyle = hue
+      ? `rgba(180,84,31,${(0.14 + t * 0.86).toFixed(3)})`
+      : `rgba(17,17,16,${(0.12 + t * 0.88).toFixed(3)})`;
+    ctx.fillRect(Math.round(x - s / 2), Math.round(y - s / 2), Math.round(s), Math.round(s));
+  });
+  // São Paulo reference ring
+  const sx = ox + (-46.63 - lo[0]) * sc, sy = h - oy - (-23.55 - lo[1]) * sc;
+  ctx.strokeStyle = hue ? '#111110' : '#b4541f'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.arc(sx, sy, 7, 0, 6.2832); ctx.stroke();
+  ctx.fillStyle = hue ? '#111110' : '#b4541f';
+  ctx.font = "9px 'JetBrains Mono', monospace";
+  ctx.fillText('SÃO PAULO', sx + 11, sy + 3);
+}
+function drawMaps() { drawMap('mapDays', 3, false); drawMap('mapLate', 4, true); }
+addEventListener('resize', () => { clearTimeout(window.__mt); window.__mt = setTimeout(drawMaps, 120); });
+
+(function () {
+  const mx = Math.max(...D.distance.map(x => x.days));
+  $('#distBands').innerHTML = D.distance.map(b => `
+    <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #ecece7">
+      <div class="mono" style="width:52px;flex:none;font-size:9px;color:#5c5c58;text-align:right">${esc(b.b)}</div>
+      <div style="flex:1;min-width:0;height:12px;background:#f2f2ef;position:relative">
+        <div style="height:100%;width:${(b.days / mx * 100).toFixed(1)}%;background:#111110"></div>
+        <div style="position:absolute;left:0;top:0;height:100%;width:${(b.late / 28 * 100).toFixed(1)}%;border-right:2px solid #b4541f"></div>
+      </div>
+      <div class="mono" style="width:64px;flex:none;font-size:9px;text-align:right;font-variant-numeric:tabular-nums">${b.days}d <span style="color:#b4541f">${b.late.toFixed(0)}%</span></div>
+    </div>`).join('') +
+    `<div class="mono" style="margin-top:8px;font-size:9px;letter-spacing:.1em;color:#b6b6b1">BAR = MEDIAN DAYS · RULE = LATE RATE</div>`;
+})();
+
+/* ── 08 the drivers ──────────────────────────────────────────────────────── */
+(function () {
+  const L = Math.log(0.7), R = Math.log(5.6), pos = v => ((Math.log(v) - L) / (R - L)) * 100;
+  $('#orRows').innerHTML =
+    `<div style="position:relative;height:16px;margin-bottom:4px">
+       <div class="mono" style="position:absolute;left:${pos(1)}%;transform:translateX(-50%);font-size:9px;color:#b6b6b1">1.0×</div>
+       <div class="mono" style="position:absolute;left:${pos(2)}%;transform:translateX(-50%);font-size:9px;color:#b6b6b1">2×</div>
+       <div class="mono" style="position:absolute;left:${pos(5)}%;transform:translateX(-50%);font-size:9px;color:#b6b6b1">5×</div>
+     </div>` +
+    D.drivers.map(r => {
+      const big = r.or > 1.4;
+      return `<div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #ecece7">
+        <div style="width:min(38vw,190px);flex:none;font-size:12.5px;${big ? 'font-weight:500' : 'color:#5c5c58'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.k)}</div>
+        <div style="flex:1;min-width:0;position:relative;height:16px">
+          <div style="position:absolute;left:${pos(1)}%;top:0;bottom:0;border-left:1px solid #d9d9d4"></div>
+          <div style="position:absolute;left:${pos(r.lo).toFixed(2)}%;width:${(pos(r.hi) - pos(r.lo)).toFixed(2)}%;top:7px;height:1.5px;background:#c9c9c3"></div>
+          <div style="position:absolute;left:${pos(r.or).toFixed(2)}%;top:50%;transform:translate(-50%,-50%);width:${big ? 11 : 8}px;height:${big ? 11 : 8}px;border-radius:50%;background:${r.or > 1 ? '#b4541f' : '#111110'}"></div>
+        </div>
+        <div class="mono" style="width:52px;flex:none;text-align:right;font-size:11px;${big ? 'font-weight:500;color:#b4541f' : 'color:#5c5c58'};font-variant-numeric:tabular-nums">${r.or.toFixed(2)}×</div>
+      </div>`;
+    }).join('');
+
+  const g = D.multiSeller, find = (l, m) => g.find(x => x.late === l && x.multi === m);
+  const cell = (v, hi) => `<div style="padding:14px 12px;border-top:1px solid #e2e2dd;text-align:center;${hi ? 'background:#111110;color:#fbfbfa' : ''}">
+      <div style="font-size:24px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums">${v.one.toFixed(0)}<span style="font-size:12px;color:${hi ? '#8a8a86' : '#b6b6b1'};font-weight:400">%</span></div>
+      <div class="mono" style="font-size:8.5px;letter-spacing:.1em;color:${hi ? '#8a8a86' : '#b6b6b1'};margin-top:3px">n=${fmt(v.n)}</div></div>`;
+  $('#msGrid').innerHTML =
+    `<div></div>
+     <div class="mono" style="padding:9px 6px;text-align:center;font-size:8.5px;letter-spacing:.12em;color:#5c5c58">ONE SELLER</div>
+     <div class="mono" style="padding:9px 6px;text-align:center;font-size:8.5px;letter-spacing:.12em;color:#5c5c58">SEVERAL</div>
+     <div class="mono" style="padding:14px 10px;border-top:1px solid #e2e2dd;font-size:8.5px;letter-spacing:.12em;color:#5c5c58;display:flex;align-items:center">ON TIME</div>
+     ${cell(find(false, false), false)}${cell(find(false, true), true)}
+     <div class="mono" style="padding:14px 10px;border-top:1px solid #e2e2dd;font-size:8.5px;letter-spacing:.12em;color:#5c5c58;display:flex;align-items:center">LATE</div>
+     ${cell(find(true, false), false)}${cell(find(true, true), false)}`;
+})();
+
+/* ── 09 what the words say ───────────────────────────────────────────────── */
+(function () {
+  const COL = ['#111110', '#b4541f', '#5c5c58', '#8a8a86', '#c9c9c3', '#b6b6b1'];
+  const X = i => 60 + i * 220, Y = v => 100 - (v / 45) * 100;
+  $('#themeSvg').innerHTML = D.themes.map((t, i) =>
+    `<path d="${t.v.map((v, j) => (j ? 'L' : 'M') + X(j) + ' ' + Y(v).toFixed(2)).join(' ')}" fill="none" stroke="${COL[i]}" stroke-width="${i < 2 ? 2 : 1.4}" vector-effect="non-scaling-stroke"></path>`).join('');
+  $('#themeMarks').innerHTML = D.themes.map((t, i) => t.v.map((v, j) =>
+    `<div style="position:absolute;left:${(X(j) / 10).toFixed(2)}%;top:${Y(v).toFixed(2)}%;transform:translate(-50%,-50%);width:${i < 2 ? 7 : 5}px;height:${i < 2 ? 7 : 5}px;border-radius:50%;background:${COL[i]}"></div>`).join('')).join('');
+  $('#themeLegend').innerHTML = D.themes.map((t, i) =>
+    `<span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:0;border-top:${i < 2 ? 2 : 1.4}px solid ${COL[i]}"></span>${esc(t.k.toUpperCase())}</span>`).join('');
+
+  const mxOne = Math.max(...D.price.map(p => p.one));
+  $('#priceBands').innerHTML = D.price.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #ecece7">
+      <div class="mono" style="width:66px;flex:none;font-size:9px;color:#5c5c58;text-align:right">${esc(p.b)}</div>
+      <div style="flex:1;min-width:0;height:12px;background:#f2f2ef"><div style="height:100%;width:${(p.one / mxOne * 100).toFixed(1)}%;background:#b4541f"></div></div>
+      <div class="mono" style="width:62px;flex:none;font-size:9px;text-align:right;font-variant-numeric:tabular-nums">${p.one.toFixed(1)}% <span style="color:#b6b6b1">${p.fr.toFixed(0)}f</span></div>
+    </div>`).join('') +
+    `<div class="mono" style="margin-top:8px;font-size:9px;letter-spacing:.1em;color:#b6b6b1">BAR = 1-STAR RATE · f = FREIGHT % OF VALUE</div>`;
+})();
+
 runLoader();
+requestAnimationFrame(drawMaps);
+setTimeout(drawMaps, 400);
 </script>
