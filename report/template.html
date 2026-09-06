@@ -1,26 +1,16 @@
 <title>The Promise Problem</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>
+/* Deliberately single-theme: this is a printed-manifest look and the figures are rendered
+   on a light ground, so the page commits to light rather than following the viewer. Every
+   colour is painted explicitly so it holds on either host background. */
 :root{
+  color-scheme:light;
   --ground:#f7f6f3; --surface:#fffefb; --surface-2:#f1efe9;
   --ink:#14201f; --ink-2:#3f4c4a; --ink-3:#5f6c6a; --muted:#8b9694;
   --rule:#e3e0d9; --rule-2:#d3cfc5;
   --ok:#0f6b5c; --ok-soft:#e2efec; --late:#c2410c; --late-soft:#f9e7dc;
   --accent:#0f6b5c;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --ground:#101413; --surface:#171d1c; --surface-2:#1e2625;
-  --ink:#f0eee9; --ink-2:#c8d1cf; --ink-3:#a3aead; --muted:#7f8b89;
-  --rule:#2a3332; --rule-2:#39433f;
-  --ok:#2fa88f; --ok-soft:#16302b; --late:#e8703c; --late-soft:#33201a;
-  --accent:#2fa88f;
-}}
-:root[data-theme="dark"]{
-  --ground:#101413; --surface:#171d1c; --surface-2:#1e2625;
-  --ink:#f0eee9; --ink-2:#c8d1cf; --ink-3:#a3aead; --muted:#7f8b89;
-  --rule:#2a3332; --rule-2:#39433f;
-  --ok:#2fa88f; --ok-soft:#16302b; --late:#e8703c; --late-soft:#33201a;
-  --accent:#2fa88f;
 }
 *{box-sizing:border-box}
 body{background:var(--ground);color:var(--ink);
