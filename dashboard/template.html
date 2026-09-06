@@ -34,16 +34,14 @@ a:hover{color:#b4541f}
 </style>
 
 <div id="loader" style="position:fixed;inset:0;z-index:99;background:#111110;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:opacity .8s cubic-bezier(.2,.7,.2,1),clip-path .9s cubic-bezier(.65,0,.35,1);opacity:1;clip-path:inset(0 0 0 0)">
-  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,#232320 0 1px,transparent 1px 100%);background-size:64px 100%;opacity:.7"></div>
-  <div style="position:relative;animation:omRise .7s cubic-bezier(.2,.7,.2,1) both">
-    <svg width="64" height="64" viewBox="0 0 32 32" aria-label="Delivery and Satisfaction" role="img">
-      <rect x="0" y="0" width="32" height="32" fill="#fbfbfa"></rect>
-      <path d="M4 22 C 9 22, 12 12, 19 12" fill="none" stroke="#111110" stroke-width="2.2" stroke-linecap="square"></path>
-      <circle cx="19" cy="12" r="3.1" fill="#111110"></circle>
-      <path d="M25 5 V 27" stroke="#111110" stroke-width="2.2" stroke-linecap="square"></path>
-    </svg>
+  <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:16px;animation:omRise .7s cubic-bezier(.2,.7,.2,1) both">
+    <canvas id="om-logo" width="620" height="300" style="width:min(310px,58vw);height:auto" aria-label="The Ask — predict the wait" role="img"></canvas>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:9px">
+      <div style="font-size:clamp(26px,5vw,38px);font-weight:400;letter-spacing:.42em;text-indent:.42em;color:#fbfbfa;line-height:1">THE ASK</div>
+      <div class="mono" style="font-size:10px;letter-spacing:.46em;text-indent:.46em;color:#5c5c58">PREDICT THE WAIT</div>
+    </div>
   </div>
-  <div class="mono" style="position:relative;font-size:10px;letter-spacing:.22em;color:#8a8a86">OLIST · MARKETPLACE INTEGRATOR · BR</div>
+  <div class="mono" style="position:relative;font-size:10px;letter-spacing:.22em;color:#8a8a86;margin-top:8px">OLIST · MARKETPLACE INTEGRATOR · BR</div>
   <div style="position:relative;display:flex;align-items:baseline;gap:10px;color:#fbfbfa">
     <div id="om-count" style="font-size:64px;font-weight:600;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1">0</div>
     <div class="mono" style="font-size:11px;letter-spacing:.18em;color:#8a8a86;padding-bottom:8px">ORDERS</div>
@@ -59,13 +57,14 @@ a:hover{color:#b4541f}
   <!-- ── sticky nav ─────────────────────────────────────────────────────── -->
   <div style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 26px;background:rgba(251,251,250,.92);backdrop-filter:blur(8px);border-bottom:1px solid #e2e2dd">
     <div style="display:flex;align-items:center;gap:11px;min-width:0">
-      <svg width="24" height="24" viewBox="0 0 32 32" style="flex:none" aria-label="Delivery and Satisfaction" role="img">
+      <!-- Solid version of the loader mark: the dither doesn't read at 24px, so the arch and
+           its promise column are drawn as strokes here instead. -->
+      <svg width="24" height="24" viewBox="0 0 32 32" style="flex:none" aria-label="The Ask" role="img">
         <rect x="0" y="0" width="32" height="32" fill="#111110"></rect>
-        <path d="M4 22 C 9 22, 12 12, 19 12" fill="none" stroke="#fbfbfa" stroke-width="2.2" stroke-linecap="square"></path>
-        <circle cx="19" cy="12" r="3.1" fill="#fbfbfa"></circle>
-        <path d="M25 5 V 27" stroke="#fbfbfa" stroke-width="2.2" stroke-linecap="square"></path>
+        <path d="M6 26 L16 7 L26 26" fill="none" stroke="#fbfbfa" stroke-width="2.4" stroke-linejoin="miter"></path>
+        <path d="M16 4 V 29" stroke="#fbfbfa" stroke-width="2.4"></path>
       </svg>
-      <div class="mono" style="font-size:10px;line-height:1.35;letter-spacing:.1em;color:#5c5c58;white-space:nowrap">DELIVERY &amp; SATISFACTION<br><span style="color:#b6b6b1">OLIST · 2016–2018</span></div>
+      <div class="mono" style="font-size:10px;line-height:1.35;letter-spacing:.1em;color:#5c5c58;white-space:nowrap">THE ASK · PREDICT THE WAIT<br><span style="color:#b6b6b1">OLIST · 2016–2018</span></div>
     </div>
     <div style="flex:1;min-width:0;display:flex;align-items:center;gap:0;flex-wrap:nowrap;justify-content:center;overflow-x:auto">
       <a href="#cliff" style="font-size:12.5px;padding:7px 9px;white-space:nowrap">The cliff</a>
@@ -452,8 +451,42 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const VIEW = 'late', SELLER_ROWS = 12, SHOW_LOADER = true;
 const state = { q: 0.95, sort: 'lost', dir: -1, all: false };
 
+/* ── logo mark ───────────────────────────────────────────────────────────── */
+// The mark is drawn rather than embedded: it is the same dithered-square language as the
+// hero risk field, so it stays crisp at any size and can't drift from the page's own aesthetic.
+// A peaked arch (the delivery curve) crossed by a vertical column at the apex (the promise).
+function drawLogo() {
+  const c = document.getElementById('om-logo');
+  if (!c) return;
+  const ctx = c.getContext('2d'), W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#fbfbfa';
+  const step = 11, sq = 6.4;
+  const apexX = W * 0.5, baseY = H * 0.92, apexY = H * 0.10;
+  const halfW = W * 0.30;
+  const bayer = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+  for (let gy = 0, y = apexY; y <= baseY; y += step, gy++) {
+    for (let gx = 0, x = apexX - halfW * 1.15; x <= apexX + halfW * 1.15; x += step, gx++) {
+      const t = (y - apexY) / (baseY - apexY);          // 0 at apex, 1 at the base
+      const spread = Math.pow(t, 0.78) * halfW;          // the arch flaring outward
+      const d = Math.abs(Math.abs(x - apexX) - spread);  // distance from either arch limb
+      const onLimb = 1 - d / (step * 3.4);
+      const onSpine = Math.abs(x - apexX) < step * 0.55 ? 1 : 0;   // the promise column
+      let v = Math.max(onLimb, onSpine * 0.95);
+      if (t < 0.04 && !onSpine) v = 0;                   // clip the limbs above the apex
+      if (v <= 0) continue;
+      // fade the limbs out toward the base, the way the hero field thins toward "safer"
+      if (!onSpine) v *= 1 - Math.pow(t, 2.6) * 0.55;
+      if (v <= (bayer[gy % 4][gx % 4] / 16) * 0.92) continue;
+      const s = sq * Math.min(1, v * 1.15);
+      ctx.fillRect(Math.round(x - s / 2), Math.round(y - s / 2), Math.round(s), Math.round(s));
+    }
+  }
+}
+
 /* ── loader ──────────────────────────────────────────────────────────────── */
 function runLoader() {
+  drawLogo();
   const target = D.stats.orders, dur = 1650, t0 = performance.now();
   const cEl = $('#om-count'), bEl = $('#om-bar');
   if (!SHOW_LOADER) return finishLoad(target);
