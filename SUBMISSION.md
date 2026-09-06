@@ -12,14 +12,14 @@
 | 1 | **Google Colab notebook** | ✅ built, verified | Upload `notebook/olist_promise_problem.ipynb` to Colab → **Share → Anyone with the link → Viewer** → submit that link |
 | 2 | **Analysis report** | ✅ deployed | https://varadharajanv0310.github.io/olist-promise-problem/report/ |
 | 3 | **Three-minute video** | ⏳ **you record** | Script in `video/script.md`. Screen-record the dashboard, upload unlisted to YouTube/Drive, submit the link |
-| 4 | **LinkedIn post** | ⏳ **you post** | Copy in `linkedin/final-post.md`. Submit the post URL + a screenshot of likes/comments at the deadline |
+| 4 | **LinkedIn post** | ✅ posted | Keep the post URL for the form. Screenshot likes/comments **at the deadline** |
 | — | Interactive dashboard | ✅ deployed | https://varadharajanv0310.github.io/olist-promise-problem/ — include it as a bonus link wherever the form allows |
 
 Everything goes into the Google Form the organisers share.
 
 ---
 
-## The three things only you can do
+## What's left
 
 ### 1 · Publish the notebook (5 min)
 1. colab.research.google.com → **File → Upload notebook** → pick `notebook/olist_promise_problem.ipynb`
@@ -31,13 +31,9 @@ Everything goes into the Google Form the organisers share.
 > number reproduces (RD +0.15/SE 0.19 · 47% fewer late · 31.0/17.7/51.2 attribution split). It has no
 > `statsmodels` dependency, which is the thing that usually breaks these in Colab.
 
-### 2 · Record the video (30 min including retakes)
+### 2 · Record the video — LAST BUILD TASK (30 min including retakes)
 Script is timed to **2:55**. Screen-record the dashboard full-screen, let the loader finish, and
 follow the section cues. Don't read the numbers off the screen — say them and let the screen confirm.
-
-### 3 · Post on LinkedIn
-Post the copy, tag **Gradient Learning with the @ picker** (a plain-text mention doesn't register),
-then drop the three links as your own first comment about an hour later.
 
 ---
 
@@ -45,9 +41,8 @@ then drop the three links as your own first comment about an hour later.
 
 - [ ] Colab link opens in an incognito window (i.e. sharing is actually public)
 - [ ] Video is unlisted-but-viewable, not private
-- [ ] LinkedIn tag on Gradient Learning is a real link, not plain text
 - [ ] Engagement screenshot taken **at the deadline**, not when you post
-- [ ] Both artifact links open for someone who isn't you (share menu → anyone with the link)
+- [ ] Both deployed pages open in incognito (github.io — already verified HTTP 200)
 - [ ] GitHub repo is public
 
 ---
