@@ -1,0 +1,117 @@
+
+==========================================================================================
+ANOMALY 1 - RIO DE JANEIRO: whose fault is it?
+==========================================================================================
+                    n  med_km  approve_h  handoff  transit  total  promised   late  score
+customer_state                                                                           
+SP              40494  163.56       0.34     1.77     4.41   7.21     18.77   5.89   4.24
+RJ              12350  394.20       0.33     1.87     8.35  12.04     24.61  13.47   3.95
+PR               4923  425.95       0.36     1.82     7.18  10.43     24.05   5.00   4.23
+MG              11354  490.39       0.33     1.82     7.19  10.31     23.60   5.61   4.18
+SC               3546  528.04       0.38     1.85     9.53  13.01     25.12   9.76   4.12
+ES               1995  762.02       0.33     1.98     9.97  13.64     25.03  12.23   4.05
+RS               5344  855.49       0.36     1.85    10.00  13.18     28.03   7.15   4.18
+
+  RJ vs PR - near-identical distance (394 vs 426 km):
+    approval (h)           RJ    0.33   PR    0.36   diff   -0.03
+    seller handoff (d)     RJ    1.87   PR    1.82   diff   +0.04
+    carrier transit (d)    RJ    8.35   PR    7.18   diff   +1.17
+    TOTAL (d)              RJ   12.04   PR   10.43   diff   +1.62
+    promised (d)           RJ   24.61   PR   24.05   diff   +0.57
+    late rate (%)          RJ   13.47   PR    5.00   diff   +8.48
+
+  RJ takes +1.62 days longer than PR at the same distance, of which:
+    seller handoff  +0.04d  (  2.8%)
+    carrier transit +1.17d  ( 72.3%)
+  => the delay is in the LAST MILE, not the seller. RJ sellers are not slower.
+
+==========================================================================================
+  Is it Rio as a DESTINATION or Rio as an ORIGIN?
+==========================================================================================
+    orders INTO RJ (any seller)      n=12,350  transit  8.35d  late 13.47%
+    orders OUT OF RJ to elsewhere    n= 3,228  transit  8.24d  late  9.08%
+    platform baseline                n=96,470  transit  7.10d  late  8.11%
+
+  => RJ as a DESTINATION is the problem. RJ sellers shipping elsewhere perform normally.
+
+==========================================================================================
+  Which parts of Rio?
+==========================================================================================
+                          n  transit  total   late  score
+customer_city                                            
+sao goncalo             385    11.93  14.91  24.94   3.73
+macae                   228     9.51  12.81  18.42   3.67
+volta redonda           227    10.02  14.20  18.06   3.87
+campos dos goytacazes   232     8.08  12.03  14.66   4.01
+nova iguacu             423     7.28  10.74  13.48   3.89
+petropolis              234     9.42  12.85  12.82   3.96
+duque de caxias         250     9.28  12.79  12.80   3.89
+niteroi                 825     8.06  11.35  12.48   4.00
+rio de janeiro         6601     8.10  11.75  11.82   3.98
+
+  spread across Rio municipalities: 11.8% to 24.9% late
+  Rio city itself: n=6,601  late 11.82%  transit 8.10d
+  rest of RJ state: n=5,749  late 15.38%  transit 9.06d
+
+==========================================================================================
+ANOMALY 2 - FEBRUARY-MARCH 2018: what actually moved?
+==========================================================================================
+               n  approve_h  handoff  transit  total  promised   late  score
+month                                                                       
+2017-09-01  4150       0.27     1.99     7.09  10.31     22.14   5.20   4.25
+2017-10-01  4478       0.32     1.96     7.05  10.26     22.40   5.29   4.19
+2017-11-01  7288       0.41     2.74     8.76  12.70     22.27  14.31   3.98
+2017-12-01  5513       0.35     2.15     9.09  13.14     27.44   8.38   4.07
+2018-01-01  7069       0.32     2.10     8.04  11.83     25.57   6.56   4.09
+2018-02-01  6555       0.37     2.16    11.02  14.26     24.26  15.99   3.87
+2018-03-01  7003       0.34     2.06     9.88  13.37     21.32  21.36   3.80
+2018-04-01  6798       0.45     1.38     6.91   9.31     23.42   5.31   4.19
+2018-05-01  6749       0.45     1.29     6.52   9.15     21.46   8.24   4.23
+2018-06-01  6096       0.44     1.17     5.85   7.96     27.28   1.36   4.30
+2018-07-01  6156       0.54     1.08     5.30   7.50     19.33   4.48   4.30
+2018-08-01  6351       0.28     1.16     4.95   7.01     13.44  10.39   4.30
+
+  Dec17-Jan18 -> Feb-Mar18 -> Apr-May18:
+    orders/mo       6291.00 ->  6779.00 ->  6773.50
+    approval (h)       0.33 ->     0.35 ->     0.45
+    handoff (d)        2.13 ->     2.11 ->     1.34
+    transit (d)        8.56 ->    10.45 ->     6.71
+    TOTAL (d)         12.49 ->    13.82 ->     9.23
+    promised (d)      26.50 ->    22.79 ->    22.44
+    late (%)           7.47 ->    18.68 ->     6.77
+
+  delivery time rose +1.33 days into the crisis, of which:
+    handoff  -0.02d  ( -1.4%)
+    transit  +1.89d  (142.0%)
+  volume change: +7.8%  -> demand did NOT spike; this is a supply-side failure.
+
+==========================================================================================
+  Was it everywhere, or somewhere?
+==========================================================================================
+                n_crisis  late_before  late_crisis  transit_before  transit_crisis  late_delta  transit_delta
+customer_state                                                                                               
+CE                   177        11.54        48.59           16.46           24.08       37.05           7.62
+ES                   282         9.09        29.43           13.18           14.00       20.34           0.82
+BA                   443        10.58        28.89           13.95           17.40       18.32           3.45
+RJ                  1743        20.05        36.43           13.72           16.05       16.38           2.33
+SC                   501         9.54        24.75           13.94           14.30       15.21           0.36
+GO                   287         6.32        20.91           13.14           14.23       14.59           1.10
+MG                  1646         3.89        17.13            8.13           10.93       13.24           2.80
+DF                   317         4.92        17.35            8.89           13.50       12.43           4.62
+PE                   228         8.87        17.98           13.89           14.80        9.12           0.91
+PR                   704         3.96        12.64            8.80            9.70        8.68           0.89
+RS                   770        10.23        17.79           14.04           15.32        7.56           1.28
+SP                  5603         3.80        10.24            5.19            5.92        6.45           0.73
+
+  states worsening: 12 of 12  (median +13.9pp)
+  => it is national and broad-based, not one route or one region.
+
+==========================================================================================
+  Was it a few sellers, or all of them?
+==========================================================================================
+    sellers active in both windows with 10+ orders each: 219
+    share whose late rate WORSENED: 86.3%
+    median change: +9.49pp   mean: +11.29pp
+  => the great majority of sellers got worse simultaneously. That is a shared
+     dependency failing - the carrier network - not seller behaviour.
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q10_anomalies.png
