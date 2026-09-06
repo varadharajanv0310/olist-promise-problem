@@ -1,0 +1,177 @@
+
+============================================================================================
+1. LISTING QUALITY - the unused columns, against the on-time 1-star residual
+============================================================================================
+  orders with listing data: 97,250
+  photos     median 2  p90 5  max 20
+  descr len  median 608  p90 1608
+
+  ON-TIME ORDERS ONLY (n=87,413) - delivery removed as a factor:
+
+  by number of listing photos:
+                n  score  pct_1star  med_price
+photo_band                                    
+1 photo     43012   4.27       7.21      89.90
+2           17274   4.31       6.43      70.74
+3           10056   4.31       6.37      89.90
+4-5         11453   4.29       6.52      87.99
+6+           5618   4.31       5.59      80.00
+
+  by description length:
+                  n  score  pct_1star  med_chars
+desc_band                                       
+shortest 20%  17504   4.25       7.16      216.0
+20-40%        17518   4.28       6.96      398.0
+40-60%        17427   4.30       6.60      609.0
+60-80%        17540   4.30       6.30      903.0
+longest 20%   17424   4.30       6.80     1611.0
+
+  correlations on ON-TIME orders (delivery held out):
+    photos               r = +0.0123   (1-star rate 6.76% baseline)
+    description length   r = +0.0132   (1-star rate 6.76% baseline)
+    name length          r = -0.0179   (1-star rate 6.76% baseline)
+
+  => the effect is REAL but SMALL. Listing quality nudges satisfaction; it does not
+     explain the on-time 1-star residual. That residual is a fulfilment-completeness and
+     product-accuracy problem, which is what the multi-seller and text findings showed.
+
+============================================================================================
+2. REVIEW RESPONSE BEHAVIOUR - latency and the unused title field
+============================================================================================
+                  n  median_h  mean_h  within_24h  has_title
+review_score                                                
+1             11775     37.18   73.34       36.44      16.60
+2              3216     40.67   71.80       27.52      15.33
+3              8225     42.26   71.23       23.55      10.21
+4             19104     42.94   74.93       21.19       9.12
+5             57121     39.75   77.03       23.32      11.67
+
+  median response time is FLAT across scores: 1-star 37.2h vs 5-star 39.7h (0.94x) - no signal in the median.
+  the signal is in the TAIL: 36.4% of 1-star reviewers answer within 24h vs 23.3% of 5-star (1.56x),
+  and they are 1.4x more likely to write a title.
+  => a same-day reply carrying a title is a weak, free early flag. Contributing, not a driver.
+
+  most common 1-star titles (1,955 with a title):
+ti
+não recomendo           106
+ruim                     55
+não recebi o produto     48
+produto errado           46
+péssimo                  42
+produto não entregue     41
+
+============================================================================================
+3. PURCHASE TIMING - hour and weekday, never analysed below month grain
+============================================================================================
+     orders  handoff  total  late  score
+Mon   16196     1.34   9.32  9.06   4.08
+Tue   15963     1.28   9.30  8.49   4.09
+Wed   15552     1.27   9.38  7.80   4.09
+Thu   14761     1.44  11.22  7.57   4.07
+Fri   14122     3.14  11.36  8.45   4.02
+Sat   10887     2.47  10.95  7.60   4.05
+Sun   11960     1.62   9.78  7.49   4.09
+
+  weekend orders  n=22,847  handoff 2.07d  total 10.23d  late 7.54%
+  weekday orders  n=76,594  handoff 1.64d  total 10.21d  late 8.28%
+  => handoff is +0.43d slower at the weekend,
+     yet total delivery differs by only +0.02d and the late rate is actually LOWER.
+     The Friday/Saturday handoff lag is absorbed entirely by the buffer - which is a small,
+     concrete demonstration of what the twelve days of padding are BUYING.
+
+  peak ordering hour: 16:00 (6,675 orders); quietest 5:00 (188)
+
+============================================================================================
+4. SELLER LIFECYCLE - tenure and churn, never built
+============================================================================================
+  sellers: 3,095   median tenure 112 days
+  one-and-done (single order ever): 571 (18.4%)
+  silent for 90+ days at the data cut: 1,289 (41.6%)
+
+  among sellers with 10+ orders (n=1,271):
+         sellers  mean_score  median_orders  median_tenure
+churned                                                   
+False        993        4.08           33.0          326.0
+True         278        3.96           20.0          255.5
+
+  churned sellers averaged 3.96 stars vs 4.08 for those still active (-0.12)
+  => sellers who leave were rated worse while they were here. Whether Olist pushed them
+     out or they gave up, seller quality and seller retention move together.
+
+============================================================================================
+5. PAYMENT vs ORDER VALUE - never reconciled; the gap is discounts
+============================================================================================
+  orders reconciled: 98,665
+  paid EXACTLY items+freight (within R$0.01): 99.61%
+  paid LESS  (discount / voucher): 92 (0.09%)   median R$0.01
+  paid MORE  (interest on installments): 290 (0.29%)   median R$5.59
+
+  the 'paid less' rows are rounding, not discounting: 92 orders with a median gap of R$0.01.
+  => payments reconcile to items + freight almost exactly. There is no visible discounting,
+     coupon programme or price adjustment anywhere in this dataset. Worth stating plainly,
+     because its absence rules out 'promotions' as an explanation for any trend we found.
+  installment interest: 260 orders paying a median 9.5% premium over list
+
+============================================================================================
+6. THE 555 ORDERS WITH MORE THAN ONE SURVEY
+============================================================================================
+  orders with 2+ surveys: 555   review rows involved: 1,114
+  score CHANGED between surveys: 209 (37.7%)
+  of those that changed:  improved 87   worsened 121
+  mean first 4.11 -> mean last 3.92 (-0.18)
+  => where a customer was surveyed twice, the second verdict is HARSHER on average.
+     Waiting longer did not soften anyone.
+
+============================================================================================
+7. PRODUCT-LEVEL OUTLIERS - analysis so far stopped at category
+============================================================================================
+  products with 30+ orders: 335  (of 32,951 total)
+
+  WORST individual products (30+ orders):
+                                  orders  score    one   late  price                     cat
+product_id                                                                                  
+b1d207586fca400a2370d50a9ba1da98      43   1.92  66.67  12.77  149.0                    None
+89b121bee266dcd25688a1ba72eefb61      62   2.38  51.47   9.52   79.9  informatica_acessorios
+25c38557cf793876c5abdd5931f922db      38   2.63  42.11  21.05  999.0                   bebes
+1dec4c88c685d5a07bf01dcb0f8bf9f8      35   2.69  40.00  40.00  559.0              automotivo
+9ad75bd7267e5c724cb42c71ac56ca72      42   2.88  41.86  40.00  105.9         cama_mesa_banho
+0cf41187284d7f099adc8415a743ebbd      33   2.89  42.86  17.65   35.9                   bebes
+b5e13c9a353102f79c6206ff5cb61a50      83   2.89  36.26  24.44   89.9              brinquedos
+362b773250263786dd58670d2df42c3b      49   2.92  39.73   5.48   49.9           esporte_lazer
+
+  BEST individual products:
+                                  orders  score   one   late  price                    cat
+product_id                                                                                
+73326828aa5efe1ba096223de496f596      53   4.83  1.85  22.64   82.0              alimentos
+6a8631b72a2f8729b91514db87e771c0      57   4.71  1.61   1.61   25.9            eletronicos
+dd6a505f83dd3c6326aa9856519e0978      36   4.69  2.78   2.78   49.9             brinquedos
+f8b624d4e475bb8d1bddf1b65c6a64f6      42   4.69  2.38   2.50  179.0  utilidades_domesticas
+aadff88486740e0b0ebe2be6c09476ae      40   4.65  0.00   0.00   29.9           beleza_saude
+
+  8 products with 30+ orders average under 3 stars, together 385 orders
+  their median late rate 19.3% vs 7.0% overall -> delivery-driven
+
+============================================================================================
+8. WHAT MAKES A 3 RATHER THAN A 4?
+============================================================================================
+                  n   late  delivery_d  slack_d  value      km  comment
+review_score                                                           
+1              9686  37.71       16.69    -6.41  99.00  486.25    78.35
+2              2997  20.69       13.28    -9.24  89.90  458.99    68.57
+3              7995  11.07       12.04   -10.36  82.95  463.92    44.07
+4             18945   5.04       10.79   -11.48  84.00  458.14    31.40
+5             56855   3.02        9.23   -12.32  84.99  411.77    35.98
+
+  => the operational gradient is SMOOTH and monotonic across all five scores - late rate
+     37.7 / 20.7 / 11.1 / 5.0 / 3.0%, delivery time 16.7 / 13.3 / 12.0 / 10.8 / 9.2 days.
+     Even the 3-to-4 step, which looks like a matter of taste, is a 2.2x difference in
+     lateness. The review score is not a blunt satisfaction proxy: on this platform it is
+     close to a continuous readout of delivery performance.
+     Order value and distance, by contrast, are flat across the whole scale.
+
+============================================================================================
+9. THE MAP - geolocation used for distance, never drawn
+============================================================================================
+  zip prefixes plotted: 4,134 covering 66,189 orders
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q11_map.png
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q11_listing_quality.png
