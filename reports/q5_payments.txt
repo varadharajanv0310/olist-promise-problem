@@ -1,0 +1,69 @@
+
+========================================================================================
+Q5  THE PAYMENT MIX AND WHAT IT BUYS
+========================================================================================
+              orders  share  order_value  med_value  mean_inst  approve_lag_h  pct_not_delivered  pct_late  med_delivery  mean_score
+payment_type                                                                                                                        
+boleto         19784  19.90       121.93      74.99       1.00          29.07               3.00      8.88         11.34        4.07
+credit_card    74975  75.40       144.01      89.90       3.55           0.27               2.87      7.96         10.01        4.07
+debit_card      1527   1.54       120.81      70.00       1.00           0.85               2.82      7.96          8.51        4.16
+voucher         3151   3.17        95.24      59.99       1.14           0.28               5.52      7.02         10.23        3.99
+
+========================================================================================
+Q5  INSTALLMENTS AND ORDER VALUE
+========================================================================================
+             orders  med_value  mean_value  mean_score  pct_1star  pct_late  med_delivery  share
+inst_band                                                                                       
+1 (upfront)   24004      55.00       82.57        4.14      10.60      7.25          9.02  32.02
+2             12262      89.99      107.98        4.09      11.03      7.95          9.84  16.36
+3             10387      90.00      121.57        4.04      12.39      8.27         10.25  13.85
+4-6           16160     107.90      157.72        4.05      12.11      8.24         10.75  21.55
+7-10          11819     179.80      302.16        3.98      14.38      8.69         11.06  15.76
+11-24           341     184.10      322.45        3.85      18.48      9.73         12.19   0.45
+
+  correlation (credit-card orders): installments vs order value  r = +0.361
+  median order value 1 installment R$55.00 -> 11-24 installments R$184.10  (3.3x)
+  ...but the score barely moves: 4.14 -> 3.85
+
+========================================================================================
+Q5  THE BOLETO CHAIN - payment method as an operational variable
+========================================================================================
+                  n  t_approve_h  t_handoff_d  t_transit_d  total_d  promised_d  pct_late
+payment_type                                                                             
+boleto        19191        29.06         1.58         7.14    11.34       23.34      8.88
+credit_card   72825         0.27         1.88         7.10    10.01       23.23      7.96
+debit_card     1484         0.84         1.60         6.13     8.51       21.27      7.96
+voucher        2977         0.28         1.85         7.13    10.23       23.09      7.02
+
+  boleto vs credit card:
+    approval     29.06h vs  0.27h   (+1.20 days)
+    handoff       1.58d vs  1.88d
+    transit       7.14d vs  7.10d
+    TOTAL        11.34d vs 10.01d   (+1.33 days)
+    late rate     8.88% vs  7.96%
+
+  => 90% of boleto's extra delivery time is the approval wait alone,
+     spent before the seller is even told to ship.
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q5_payment_chain.png
+
+========================================================================================
+Q5  DOES PAYMENT METHOD REACH THE REVIEW?  (controlling for delivery outcome)
+========================================================================================
+              score_ontime  score_late      n
+payment_type                                 
+boleto               4.275       2.785  19191
+credit_card          4.287       2.476  72825
+debit_card           4.340       3.000   1484
+voucher              4.242       2.349   2977
+
+  raw score spread across methods : 0.176 stars
+  spread among ON-TIME orders only: 0.098 stars
+  => most of the raw payment-method difference is delivery, not payment.
+
+========================================================================================
+Q5  VOUCHERS - the exception
+========================================================================================
+  orders using a voucher     : n=3,866  not-delivered 4.84%  score 4.00  value R$110.71
+  orders without a voucher   : n=95,571  not-delivered 2.90%  score 4.07  value R$138.83
+
+  multi-record payments (split across methods): 2,961 orders, not-delivered 2.90%

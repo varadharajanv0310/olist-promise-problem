@@ -32,8 +32,16 @@ And here's the part I didn't expect: over 19 months Olist quietly cut that buffe
 6** — while their late rate climbed from 3% to 10%. The experiment already ran. The data recorded
 what it cost.
 
-🛠️ **What I'm building:** an analytics solution — a full cleaning pipeline, evidence for six core
-business questions, and a set of recommendations Olist's ops team could act on Monday.
+🛠️ **What I'm building — three layers off one pipeline:**
+
+→ **An analytics solution:** a full cleaning pipeline and evidence for six core business questions.
+→ **A dashboard** that puts the findings in front of an ops team instead of burying them in a notebook.
+→ **A predictive model** built from the insight itself: if breaking the promise is what costs Olist
+its ratings, then score every order's *risk of being late* at checkout — and set the promise per
+order instead of padding all of them by twelve days.
+
+That last one is the part I'm most interested in. The analysis says "don't cut the buffer." The model
+turns that into "cut it where it's safe, widen it where it isn't."
 
 **Today's biggest learning:** the obvious recommendation ("your delivery estimates are inaccurate,
 tighten them") would have been confidently, expensively wrong. Checking the asymmetry before

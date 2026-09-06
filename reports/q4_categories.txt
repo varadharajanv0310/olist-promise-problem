@@ -1,0 +1,115 @@
+
+========================================================================================
+Q4  CATEGORY SCOREBOARD  (32 categories with >= 300 reviewed orders, 93,700 orders = 95.0% of volume)
+========================================================================================
+platform mean score 4.090 | on-time-only 4.284 | late rate 8.11%
+
+                                 orders  rev_share  avg_price  mean_score  score_ontime  pct_1star  pct_late  med_delivery  freight_ratio  med_km
+primary_category                                                                                                                                 
+bed_bath_table                     9324       7.63     111.21        3.96          4.13      13.00      8.80         10.75           0.22  383.10
+health_beauty                      8801       9.27     143.09        4.17          4.38      10.56      9.00          9.57           0.20  436.60
+sports_leisure                     7683       7.27     128.56        4.16          4.37      10.66      7.78         10.12           0.21  450.49
+computers_accessories              6671       6.71     136.73        4.02          4.20      12.89      7.72         11.11           0.21  504.82
+furniture_decor                    6328       5.35     114.92        4.02          4.21      12.61      8.60         10.91           0.26  414.00
+housewares                         5821       4.65     108.56        4.14          4.31      10.19      7.02          8.94           0.28  377.92
+watches_gifts                      5607       8.87     215.08        4.05          4.27      12.07      8.55         10.36           0.11  431.02
+telephony                          4179       2.38      77.35        4.00          4.18      11.80      8.54         10.82           0.44  481.25
+auto                               3880       4.36     152.77        4.09          4.29      11.29      8.65          9.74           0.22  433.18
+toys                               3869       3.57     125.25        4.17          4.37      10.55      7.55          9.43           0.20  378.67
+cool_stuff                         3603       4.68     176.37        4.16          4.35       9.49      6.86         10.43           0.15  474.00
+garden_tools                       3470       3.55     139.14        4.14          4.33      10.32      8.06         11.73           0.29  497.21
+perfumery                          3146       2.93     126.64        4.21          4.40      10.33      7.42          9.43           0.17  397.74
+baby                               2835       3.03     145.39        4.04          4.29      12.56      9.28         10.08           0.22  454.59
+electronics                        2536       1.18      63.32        4.09          4.27      11.04      9.87         11.02           0.63  472.61
+stationery                         2292       1.70     100.90        4.24          4.44       8.64      7.80         10.21           0.22  381.06
+fashion_bags_accessories           1855       1.12      82.38        4.18          4.35       9.38      6.62          9.01           0.27  438.63
+pet_shop                           1704       1.58     125.93        4.23          4.38       9.15      6.24          9.53           0.21  444.49
+unknown                            1416       1.33     127.54        3.93          4.19      15.96      8.98         10.73           0.20  403.20
+office_furniture                   1270       2.02     216.48        3.61          3.75      18.19      9.19         18.87           0.24  341.33
+consoles_games                     1057       1.16     149.08        4.05          4.29      11.92      8.19         11.34           0.26  562.10
+luggage_accessories                1028       1.03     136.67        4.33          4.45       6.91      5.43          9.04           0.23  377.62
+home_appliances                     764       0.59     104.94        4.15          4.30      10.60      6.69          9.41           0.31  388.70
+construction_tools_construction     736       1.06     196.39        4.09          4.30      11.68      9.25          8.82           0.21  391.43
+small_appliances                    627       1.40     303.39        4.16          4.35      11.16      6.27          9.00           0.18  414.93
+musical_instruments                 624       1.41     306.86        4.17          4.42       9.94      8.90         10.45           0.17  461.36
+books_general_interest              509       0.34      92.08        4.46          4.64       7.07      6.91          9.65           0.27  429.90
+home_construction                   480       0.62     175.06        4.00          4.12      10.62      8.25         11.51           0.19  421.00
+food                                445       0.21      65.36        4.26          4.44       9.66     10.09          7.17           0.28  365.05
+furniture_living_room               417       0.51     167.06        4.01          4.21      11.27      8.56         12.07           0.25  430.54
+home_confort                        377       0.44     157.78        3.90          4.09      14.32     10.48         11.50           0.16  379.39
+audio                               346       0.37     144.80        3.82          4.11      16.76     13.08         10.78           0.18  427.65
+
+========================================================================================
+Q4  STRONGEST AND WEAKEST vs THE PLATFORM
+========================================================================================
+WEAKEST (raw mean score):
+                       orders  mean_score  score_ontime  pct_late  avg_price
+primary_category                                                            
+office_furniture         1270        3.61          3.75      9.19     216.48
+audio                     346        3.82          4.11     13.08     144.80
+home_confort              377        3.90          4.09     10.48     157.78
+unknown                  1416        3.93          4.19      8.98     127.54
+bed_bath_table           9324        3.96          4.13      8.80     111.21
+telephony                4179        4.00          4.18      8.54      77.35
+home_construction         480        4.00          4.12      8.25     175.06
+furniture_living_room     417        4.01          4.21      8.56     167.06
+
+STRONGEST (raw mean score):
+                          orders  mean_score  score_ontime  pct_late  avg_price
+primary_category                                                               
+toys                        3869        4.17          4.37      7.55     125.25
+fashion_bags_accessories    1855        4.18          4.35      6.62      82.38
+perfumery                   3146        4.21          4.40      7.42     126.64
+pet_shop                    1704        4.23          4.38      6.24     125.93
+stationery                  2292        4.24          4.44      7.80     100.90
+food                         445        4.26          4.44     10.09      65.36
+luggage_accessories         1028        4.33          4.45      5.43     136.67
+books_general_interest       509        4.46          4.64      6.91      92.08
+
+========================================================================================
+Q4  PRODUCT PROBLEM OR LOGISTICS PROBLEM?
+========================================================================================
+Categories that are WEAK EVEN WHEN DELIVERED ON TIME  (product / listing / expectation problem):
+                   orders  mean_score  score_ontime  product_gap  delivery_drag  pct_late  avg_price
+primary_category                                                                                    
+office_furniture     1270       3.609         3.746       -0.537         -0.138     9.193    216.481
+home_confort          377       3.902         4.087       -0.197         -0.185    10.484    157.782
+audio                 346       3.824         4.110       -0.173         -0.287    13.081    144.796
+home_construction     480       4.000         4.124       -0.159         -0.124     8.245    175.064
+bed_bath_table       9324       3.957         4.132       -0.151         -0.175     8.802    111.210
+telephony            4179       3.999         4.177       -0.106         -0.179     8.544     77.349
+unknown              1416       3.929         4.190       -0.094         -0.261     8.984    127.541
+
+Categories that are FINE ON TIME but dragged down by delivery (logistics problem):
+                     orders  mean_score  score_ontime  product_gap  delivery_drag  pct_late   med_km
+primary_category                                                                                    
+audio                   346       3.824         4.110       -0.173         -0.287    13.081  427.647
+unknown                1416       3.929         4.190       -0.094         -0.261     8.984  403.197
+musical_instruments     624       4.170         4.421        0.138         -0.251     8.896  461.364
+baby                   2835       4.038         4.289        0.005         -0.251     9.279  454.590
+consoles_games         1057       4.045         4.294        0.010         -0.248     8.193  562.101
+watches_gifts          5607       4.051         4.267       -0.017         -0.217     8.546  431.021
+sports_leisure         7683       4.161         4.372        0.088         -0.211     7.781  450.487
+
+  correlation across categories:  late rate vs mean score   r = -0.601
+                                  price     vs mean score   r = -0.223
+                                  distance  vs mean score   r = +0.078
+                                  freight%  vs mean score   r = +0.044
+
+  spread in on-time score across categories: 3.75 (office_furniture) to 4.64 (books_general_interest)
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q4_category_portfolio.png
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q4_product_vs_logistics.png
+
+========================================================================================
+Q4  DOES PRICE RELATE TO SATISFACTION?  (order level, not category level)
+========================================================================================
+                  n  med_price  mean_score  pct_1star  pct_late  freight_ratio
+price_band                                                                    
+cheapest 20%  19872      25.49        4.16       9.47      7.29           0.56
+20-40%        19630      50.50        4.14      10.07      7.97           0.30
+40-60%        19735      86.90        4.10      11.00      7.92           0.20
+60-80%        19697     134.00        4.07      12.03      8.63           0.15
+80-95%        14841     230.00        4.00      13.61      8.57           0.10
+top 5%         4891     629.94        3.92      16.44      9.35           0.05
+
+  cheapest 20% pay 56% of order value in freight; top 5% pay 5%

@@ -1,0 +1,87 @@
+D:\Data Analytics Hackathon - Gradient\scripts\25_q6_root_cause.py:195: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  print(f"    {lab:<26} {txt.str.contains(pat, regex=True, na=False).mean() * 100:5.1f}%")
+
+========================================================================================
+Q6  STEP 0 - THERE ARE TWO SEPARATE FAILURE MODES, NOT ONE
+========================================================================================
+  DELIVERED orders      n= 96,478  mean 4.14  1-star 10.04%
+  NEVER-DELIVERED       n=  2,963  mean 1.75  1-star 70.50%
+
+  never-delivered orders are 2.98% of reviewed orders but 17.74% of all 1-star reviews
+  -> 2,089 one-star reviews that NO delivery improvement can reach.
+
+  by status:
+                 n  mean  pct_1star
+order_status                       
+shipped       1107  2.00      61.97
+canceled       625  1.80      69.44
+unavailable    609  1.53      77.50
+invoiced       314  1.65      73.89
+processing     301  1.28      86.38
+created          5  1.80      80.00
+approved         2  2.50      50.00
+
+========================================================================================
+Q6  STEP 1 - DRIVER MODEL FOR P(1-STAR) AMONG DELIVERED ORDERS
+========================================================================================
+  n = 95,978   base 1-star rate = 10.05%   McFadden pseudo-R2 = 0.168
+
+  continuous terms are per +1 SD; SD shown so the effect is readable in real units:
+
+          term  odds_ratio  or_lo  or_hi      z 1sd_equals
+  multi_seller       4.993  4.391  5.677 24.542     0 -> 1
+          wait       1.501  1.442  1.563 19.863       8.77
+     days_late       1.484  1.442  1.528 26.819       3.26
+         items       1.266  1.243  1.290 24.877       0.52
+     log_value       1.092  1.055  1.130  5.040       0.92
+   pay_voucher       1.088  0.952  1.243  1.240     0 -> 1
+       handoff       1.085  1.063  1.108  7.715       3.28
+     freight_r       1.056  1.022  1.092  3.295       0.29
+        log_km       0.915  0.886  0.945 -5.424       1.37
+pay_debit_card       0.894  0.730  1.095 -1.087     0 -> 1
+    pay_boleto       0.883  0.832  0.937 -4.092     0 -> 1
+    days_early       0.863  0.838  0.889 -9.865       7.37
+
+  PRIMARY vs SECONDARY:
+    days_late dominates: OR 4.99 per SD (3.3 days), z = 25
+    wait         OR 1.501  z    19.9   -> secondary
+    handoff      OR 1.085  z     7.7   -> secondary
+    log_km       OR 0.915  z    -5.4   -> secondary
+    freight_r    OR 1.056  z     3.3   -> secondary
+    log_value    OR 1.092  z     5.0   -> secondary
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q6_odds_ratios.png
+
+========================================================================================
+Q6  STEP 2 - HOW MANY 1-STAR REVIEWS DOES EACH FACTOR ACCOUNT FOR?
+========================================================================================
+  total 1-star reviews                         11,775   100.0%
+    from LATE deliveries                        3,652    31.0%
+    from orders that NEVER ARRIVED              2,089    17.7%
+    from orders delivered ON TIME               6,033    51.2%
+
+  => 48.8% of all 1-star reviews are a DELIVERY failure of one kind or the other.
+  => the remaining 51.2% arrived on time and the customer was still furious -
+     that residual is the product/listing/expectation problem Q4 isolated.
+
+========================================================================================
+Q6  STEP 3 - THE RESIDUAL: on-time orders that still got 1 star
+========================================================================================
+  n = 6,033 of 88,644 on-time delivered orders (6.81%)
+
+    median order value R$    1-star    99.80   others    84.90
+    median freight ratio     1-star     0.23   others     0.22
+    median distance km       1-star   448.47   others   425.04
+    median delivery days     1-star    10.94   others     9.57
+    median slack days        1-star   -12.26   others   -12.32
+    mean items               1-star     1.00   others     1.00
+    multi-seller share %     1-star     7.51   others     0.97
+    has written comment %    1-star    82.70   others    36.51
+
+  what the 4,989 written ones say:
+    not received / missing      20.1%
+    wrong or broken item        13.6%
+    quality complaint           10.0%
+    late (despite on-time)       6.4%
+
+  NOTE: 'not received' still appears on ON-TIME orders - partial deliveries. An order is marked
+        delivered when the parcel arrives, but a multi-seller order ships in several parcels.

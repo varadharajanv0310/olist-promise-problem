@@ -1,0 +1,74 @@
+D:\Data Analytics Hackathon - Gradient\scripts\26_multiseller.py:82: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  a_ = low[low.multi].msg.str.contains(pat, regex=True, na=False).mean() * 100
+D:\Data Analytics Hackathon - Gradient\scripts\26_multiseller.py:83: UserWarning: This pattern is interpreted as a regular expression, and has match groups. To actually get the groups, use str.extract.
+  b_ = low[~low.multi].msg.str.contains(pat, regex=True, na=False).mean() * 100
+
+========================================================================================
+1. THE RAW EFFECT
+========================================================================================
+                      n  mean_score  pct_1star  pct_late  med_delivery
+single seller     95203        4.16       9.69      8.20         10.25
+MULTIPLE sellers   1275        2.83      36.47      1.41          7.93
+
+  multi-seller orders are 1.32% of delivered orders but 4.80% of 1-star reviews
+
+========================================================================================
+2. DOES IT SURVIVE CONTROLLING FOR LATENESS?
+========================================================================================
+
+  ON-TIME only:
+            n  mean_score  pct_1star
+single  87387        4.30       6.39
+MULTI    1257        2.84      36.04
+    penalty: -1.46 stars, 1-star rate 5.6x
+
+  LATE only:
+           n  mean_score  pct_1star
+single  7808        2.55      46.62
+MULTI     18        1.94      66.67
+    penalty: -0.60 stars, 1-star rate 1.4x
+
+========================================================================================
+3. IS IT SELLERS, OR JUST MORE ITEMS?  (the decisive test)
+========================================================================================
+                                      n  mean_score  pct_1star
+n_items kind                                                  
+2.0     multi-seller                957        2.87      35.21
+        one seller, several items  6435        3.79      18.28
+3.0     multi-seller                203        2.86      36.45
+        one seller, several items  1103        3.62      21.67
+4.0     multi-seller                 68        2.38      48.53
+        one seller, several items   427        3.50      24.82
+5.0     multi-seller                 18        1.94      61.11
+        one seller, several items   175        3.62      21.14
+6.0     multi-seller                 11        3.27      36.36
+        one seller, several items   180        3.33      30.00
+
+  Same number of items. The only difference is how many places they ship from.
+
+  multi-seller  : n=1,257  score 2.83  1-star 36.52%
+  one seller    : n=8,320  score 3.74  1-star 19.38%
+  => splitting the SAME basket across sellers costs -0.91 stars
+
+========================================================================================
+4. WHAT DO THE WRITTEN REVIEWS SAY?
+========================================================================================
+  1-2 star reviews with text: multi-seller n=523  single n=9,121
+
+  theme                           MULTI-seller     single     lift
+  only part arrived / missing            29.6%       7.5%    3.97x
+  did not receive                        35.8%      24.0%    1.49x
+  wrong or broken                         3.1%       9.2%    0.33x
+  quality                                 1.9%       8.3%    0.23x
+
+========================================================================================
+5. SIZE OF THE PRIZE
+========================================================================================
+  multi-seller delivered orders              1,275
+  their 1-star reviews                         465
+  expected at the single-seller rate           123
+  EXCESS 1-star reviews                        342   (3.5% of all 1-stars on delivered orders)
+
+  ...from 1.32% of orders. This is the highest-leverage fix in the
+  dataset per order touched, and it is a notification problem, not a logistics one.
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q6_multiseller.png
