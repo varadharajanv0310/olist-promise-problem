@@ -1,0 +1,18 @@
+# Data — not redistributed. Olist dataset is CC BY-NC-SA; see README for how to obtain it.
+data/raw/
+data/processed/
+*.xlsx
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

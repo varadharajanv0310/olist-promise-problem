@@ -1,0 +1,82 @@
+
+------------------------------------------------------------------------------
+LOADING RAW
+------------------------------------------------------------------------------
+  orders in                                        99,441
+
+------------------------------------------------------------------------------
+C1  DEDUPE REVIEWS
+------------------------------------------------------------------------------
+  review rows in                                   100,000
+  duplicate review_id                              827
+  orders with >1 survey                            555
+  fully duplicated rows                            0
+  review rows out (1 per order)                    99,441
+
+------------------------------------------------------------------------------
+C3  CATEGORY TRANSLATION
+------------------------------------------------------------------------------
+  categories with no translation                   2 -> ['pc_gamer', 'portateis_cozinha_e_preparadores_de_alimentos']
+  products with unknown category                   610
+
+------------------------------------------------------------------------------
+C4  GEOLOCATION -> ONE POINT PER ZIP PREFIX
+------------------------------------------------------------------------------
+  geolocation rows in                              1,000,163
+  unique zip prefixes                              19,015
+  rows per prefix                                  52.6
+  readings outside Brazil (dropped)                42
+  zip prefixes out                                 19,010
+
+------------------------------------------------------------------------------
+C2  AGGREGATE ORDER ITEMS (left join - keep itemless orders)
+------------------------------------------------------------------------------
+  item rows                                        112,650
+  orders present in items                          98,666
+  orders with NO items                             775
+  multi-item orders                                9,803
+  multi-seller orders                              1,278
+
+------------------------------------------------------------------------------
+C6  AGGREGATE PAYMENTS
+------------------------------------------------------------------------------
+  payment rows                                     103,886
+  not_defined records (flagged)                    3
+  multi-payment orders                             2,961
+
+------------------------------------------------------------------------------
+ASSEMBLING ORDER-LEVEL TABLE
+------------------------------------------------------------------------------
+  rows after joins (must be 99,441)                99,441
+  orders missing customer geo                      279
+  orders missing seller geo                        991
+  orders with a distance                           98,176
+  median seller->customer km                       434
+
+------------------------------------------------------------------------------
+C7  DERIVED TIMING FEATURES (delivered orders only)
+------------------------------------------------------------------------------
+  delivered w/ timings                             96,476
+  late share of delivered                          8.11%
+
+------------------------------------------------------------------------------
+ECONOMICS, REVIEW AND CUSTOMER FEATURES
+------------------------------------------------------------------------------
+  orders with a review                             99,441
+  pre-delivery reviews                             8,446
+  repeat customers (people)                        2,997
+  orders from repeat customers                     6,342
+
+------------------------------------------------------------------------------
+C5  TREND WINDOW FLAG
+------------------------------------------------------------------------------
+  orders in Jan2017-Aug2018 window                 99,092 (99.6%)
+  orders excluded as edge artifacts                349
+
+------------------------------------------------------------------------------
+VALIDATION + SAVE
+------------------------------------------------------------------------------
+  orders delivered BEFORE carrier pickup           23  (flagged, not dropped)
+
+  -> D:\Data Analytics Hackathon - Gradient\data\processed\orders_analytical.parquet  (99,441 rows x 65 cols)
+  -> D:\Data Analytics Hackathon - Gradient\data\processed\cleaning_log.json

@@ -1,0 +1,39 @@
+====================================================================================
+RD ESTIMATE AT THE TRUE CUTOFF (gap = 2 days), with HC1 standard errors
+====================================================================================
+ bandwidth        n    effect      SE       t               95% CI
+      0.75    1,023     0.047   0.214    0.22   [ -0.37,  0.47]
+      1.00    1,370     0.151   0.188    0.80   [ -0.22,  0.52]
+      1.25    2,066     0.106   0.180    0.59   [ -0.25,  0.46]
+      1.50    2,544     0.027   0.166    0.16   [ -0.30,  0.35]
+      2.00    3,162    -0.111   0.124   -0.90   [ -0.36,  0.13]
+
+====================================================================================
+PLACEBO CUTOFFS (bw=1.0) - if gap=2 were special, only it should show an effect
+====================================================================================
+    cutoff        n    effect      SE       t
+        -4    4,136    -0.045   0.096   -0.47
+        -3    3,648    -0.119   0.106   -1.12
+        -2    3,281    -0.140   0.115   -1.21
+        -1    3,012     0.007   0.116    0.06
+         0    2,754    -0.040   0.113   -0.35
+         1    2,117     0.002   0.139    0.02
+         2    1,370     0.151   0.188    0.80   <-- TRUE CUTOFF
+         3    1,045     0.157   0.276    0.57
+         4      953    -0.149   0.264   -0.56
+         5      900    -0.026   0.252   -0.10
+
+====================================================================================
+DONUT RD (drop obs within 0.25d of cutoff, bw=1.5) - guards against sorting at the threshold
+====================================================================================
+effect = -0.073  SE 0.272  t -0.27  n 2,096
+
+====================================================================================
+DECOMPOSING THE RAW 1.50-STAR PRE/POST GAP
+====================================================================================
+raw naive gap (post-delivery minus pre-delivery reviews) = +1.50 stars
+causal effect of survey timing at the cutoff (RD, bw=1.0)= -0.15 stars (SE 0.19)
+=> attributable to WHEN they were asked : ~0.15 stars, not distinguishable from zero
+=> attributable to the order being LATE  : ~1.35 stars, i.e. essentially all of it
+
+upper bound: the 95% CI rules out a survey-timing effect larger than 0.52 stars - far short of the 1.50-star raw gap.

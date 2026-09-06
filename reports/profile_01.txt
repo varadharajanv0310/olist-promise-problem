@@ -1,0 +1,249 @@
+
+==============================================================================
+1. STRUCTURAL INTEGRITY
+==============================================================================
+orders       rows=  99,441  unique order_id=  99,441  dup_keys=     0
+customers    rows=  99,441  unique customer_id=  99,441  dup_keys=     0
+products     rows=  32,951  unique product_id=  32,951  dup_keys=     0
+sellers      rows=   3,095  unique seller_id=   3,095  dup_keys=     0
+reviews      rows= 100,000  unique review_id=  99,173  dup_keys=   827
+
+reviews: unique order_id = 99,441  (orders with >1 review = 555)
+fully duplicated review rows = 0
+orders with items    = 98,666 / 99,441  (missing = 775)
+orders with payments = 99,440
+orders with reviews  = 99,441
+multi-item orders    = 9,803
+multi-seller orders  = 1,278
+multi-payment orders = 2,961
+
+==============================================================================
+2. MISSINGNESS (orders / products / reviews)
+==============================================================================
+
+-- orders --
+order_approved_at                 160
+order_delivered_carrier_date     1783
+order_delivered_customer_date    2965
+
+-- products --
+product_category_name         610
+product_name_lenght           610
+product_description_lenght    610
+product_photos_qty            610
+product_weight_g                2
+product_length_cm               2
+product_height_cm               2
+product_width_cm                2
+
+-- reviews --
+review_comment_title      88285
+review_comment_message    58247
+
+==============================================================================
+3. ORDER STATUS
+==============================================================================
+                  n    pct
+order_status              
+delivered     96478  97.02
+shipped        1107   1.11
+canceled        625   0.63
+unavailable     609   0.61
+invoiced        314   0.32
+processing      301   0.30
+created           5   0.01
+approved          2   0.00
+
+==============================================================================
+4. TIME COVERAGE  (head/tail truncation check)
+==============================================================================
+first 8 months:
+ym
+2016-09       4
+2016-10     324
+2016-12       1
+2017-01     800
+2017-02    1780
+2017-03    2682
+2017-04    2404
+2017-05    3700
+Freq: M
+
+last 5 months:
+ym
+2018-06    6167
+2018-07    6292
+2018-08    6512
+2018-09      16
+2018-10       4
+Freq: M
+
+full range: 2016-09-04 21:15:19  ->  2018-10-17 17:30:18
+
+==============================================================================
+5. REVIEW SCORE DISTRIBUTION (is the mean even the right metric?)
+==============================================================================
+                  n    pct
+review_score              
+1             11858  11.86
+2              3235   3.24
+3              8287   8.29
+4             19200  19.20
+5             57420  57.42
+
+mean=4.071  median=5  1-2 star rate=15.09%
+has comment message = 41.8%
+
+comment rate BY score (do angry people write more?):
+review_score
+1    77.4
+2    68.9
+3    44.2
+4    31.4
+5    36.0
+
+==============================================================================
+6. DELIVERY: IS THE ETA PADDED?  (hypothesis A)
+==============================================================================
+delivered orders analysed = 96,470
+       actual_days  promised_days  gap_days
+count     96470.00       96470.00  96470.00
+mean         12.56          23.74    -11.18
+std           9.55           8.76     10.18
+min           0.53           2.01   -146.02
+5%            3.02          10.48    -25.94
+25%           6.77          18.33    -16.24
+50%          10.22          23.23    -11.95
+75%          15.72          28.41     -6.39
+95%          29.27          38.42      3.82
+max         209.63         155.14    188.98
+
+LATE (gap>0) = 8.11%   EARLY/ON-TIME = 91.89%
+median slack (days early) = 11.9
+
+==============================================================================
+7. SCORE BY DELIVERY OUTCOME  (hypothesis C setup)
+==============================================================================
+                 n  mean_score  pct_1star
+bucket                                   
+15d+ early   29767        4.31       6.88
+7-15d early  41949        4.30       6.59
+3-7d early   12657        4.21       6.96
+0-3d early    4769        4.12       8.20
+0-3d LATE     2677        3.75      14.23
+3-7d LATE     1823        2.30      53.65
+7-15d LATE    1971        1.73      68.49
+15d+ LATE     1394        1.72      69.01
+
+==============================================================================
+8. SCORE BY ORDER STATUS  (non-delivery as a separate failure mode)
+==============================================================================
+                  n  mean_score  pct_1star
+order_status                              
+delivered     97015        4.14      10.05
+shipped        1118        2.00      61.99
+canceled        629        1.81      69.32
+unavailable     611        1.53      77.58
+invoiced        318        1.65      73.90
+processing      302        1.27      86.42
+created           5        1.80      80.00
+approved          2        2.50      50.00
+
+==============================================================================
+9. *** SURVEY TIMING ARTIFACT ***  (hypothesis B - the crown jewel)
+==============================================================================
+reviews CREATED BEFORE the product arrived: 8,483 of 97,007 (8.74%)
+
+score comparison:
+                            n  mean_score  pct_1star
+review_before_delivery                              
+False                   88524        4.27       6.91
+True                     8483        2.77      42.91
+
+share of ALL 1-star reviews that were written pre-delivery: 37.3%
+
+does the survey fire at the ETA? (review_creation - estimated_delivery, days, LATE orders):
+count    7865.00
+mean        2.08
+std         1.79
+min       -32.00
+25%         2.00
+50%         2.00
+75%         2.00
+max        15.00
+
+==============================================================================
+10. LEAD-TIME DECOMPOSITION  (where does the time actually go?)
+==============================================================================
+             on-time/early       LATE      delta
+t_approve            0.01       0.02       0.00
+t_handoff            1.75       3.01       1.26
+t_transit            6.92      23.92      17.00
+actual_days          9.73      29.15      19.43
+
+==============================================================================
+11. REPEAT CUSTOMERS
+==============================================================================
+customer_id unique   = 99,441
+customer_unique_id   = 96,096
+people with >1 order = 2,997  (3.12% of people)
+orders from repeaters= 6,342  (6.38% of orders)
+
+==============================================================================
+12. PAYMENTS
+==============================================================================
+                  n    pct
+payment_type              
+credit_card   76795  73.92
+boleto        19784  19.04
+voucher        5775   5.56
+debit_card     1529   1.47
+not_defined       3   0.00
+
+value + installments by type:
+                  n  mean_value  median_value  mean_inst
+payment_type                                            
+boleto        19784      145.03         93.89       1.00
+credit_card   76795      163.32        106.87       3.51
+debit_card     1529      142.57         89.30       1.00
+not_defined       3        0.00          0.00       1.00
+voucher        5775       65.70         39.28       1.00
+
+approval lag (hours) + failure rate by payment type:
+                 n  median_lag_h  mean_lag_h  pct_not_delivered
+ptype                                                          
+boleto       19784         29.07       33.12               3.00
+credit_card  76504          0.27        4.59               2.88
+debit_card    1528          0.85        9.55               2.81
+not_defined      3           NaN         NaN             100.00
+voucher       1621          0.31        9.46               7.59
+
+==============================================================================
+13. GEOGRAPHY CONCENTRATION
+==============================================================================
+top customer states:
+customer_state
+SP    41.98
+RJ    12.92
+MG    11.70
+RS     5.50
+PR     5.07
+SC     3.66
+
+top seller states:
+seller_state
+SP    59.74
+PR    11.28
+MG     7.88
+SC     6.14
+RJ     5.53
+RS     4.17
+
+geolocation: 1,000,163 rows / 19,015 unique prefixes = 52.6 rows per prefix
+
+==============================================================================
+14. CATEGORY COVERAGE
+==============================================================================
+products missing category = 610
+distinct categories in products = 73  |  translation rows = 71
+categories with NO english translation = 2: ['pc_gamer', 'portateis_cozinha_e_preparadores_de_alimentos']
