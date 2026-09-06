@@ -1,0 +1,122 @@
+
+==========================================================================================
+1. REPEAT CUSTOMERS - does a bad first order cost Olist the second one?
+==========================================================================================
+  people 96,096   orders 99,441   repeat rate 3.12% of people
+  orders from repeat buyers: 6,342 (6.38%)
+
+  restricting to first orders placed on or before 2018-04-20 so every customer has
+  at least 180 days to come back: 68,940 customers
+  overall return rate in that cohort: 3.79%
+
+              customers  return_rate  index_vs_5star
+review_score                                        
+1                  8978         3.43           84.51
+2                  2378         3.41           83.91
+3                  5985         3.39           83.55
+4                 13416         3.51           86.48
+5                 38183         4.06          100.00
+
+  first order rated 1-2 stars -> 3.43% return
+  first order rated 5 stars   -> 4.06% return
+  relative difference: -15.6%
+
+  CAVEAT: with a 3.0% base return rate the absolute gap is small and the cohort is thin.
+  The honest read is that Olist has almost no repeat business from ANY cohort - the
+  retention problem dwarfs the satisfaction differential inside it.
+
+  lifetime spend: repeat R$259.87 (n=2,997)  vs  one-time R$137.63 (n=93,099)   -> 1.89x
+  repeat buyers are 3.12% of customers but 5.73% of revenue
+
+==========================================================================================
+2. FREIGHT vs PRODUCT CHARACTERISTICS - what is Olist actually charging for?
+==========================================================================================
+  single-item orders analysed: 88,100
+
+  correlation with freight charged:
+    weight (log)         r = +0.536
+    volume (log)         r = +0.446
+    distance (log)       r = +0.581
+    order value (log)    r = +0.470
+
+  log-log model  log(freight) ~ log(weight) + log(volume) + log(distance)
+    weight elasticity   +0.159   (a 10% heavier parcel costs +1.59% more)
+    volume elasticity   +0.031
+    distance elasticity +0.194   (a 10% longer trip costs +1.94% more)
+    R2 = 0.600
+
+  => BOTH elasticities are far below 1: a 10x longer trip raises freight only 1.56x,
+     and a 10x heavier parcel only 1.44x. Freight is heavily compressed against
+     real cost, so long-haul orders are cross-subsidised by short-haul ones.
+
+  states paying LESS than weight/volume/distance predict:
+                 mean   size
+customer_state              
+RS             -0.059   4844
+SP             -0.052  36988
+DF             -0.042   1763
+ES             -0.039   1835
+  states paying MORE than weight/volume/distance predict:
+                 mean  size
+customer_state             
+PI              0.315   454
+MA              0.319   675
+PB              0.347   478
+RO              0.387   221
+
+  => remote northern states pay a premium of up to 47% BEYOND what their distance alone explains -
+     probably genuine last-mile cost, but it compounds their disadvantage: they wait the
+     longest AND pay the most, on the smallest order values.
+
+==========================================================================================
+3. REVIEW TEXT - what the words add to the score
+==========================================================================================
+  reviews with text: 41,562 of 99,441 (41.8%)
+  comment rate by score: 1star 77%  2star 69%  3star 44%  4star 31%  5star 36%
+
+  median comment length by score:
+review_score
+1    93.0
+2    90.0
+3    73.0
+4    48.0
+5    43.0
+
+  theme                         1        2        3        4        5
+  never arrived             29.5%    16.2%     9.6%     3.3%     1.4%
+  partial delivery           7.7%     8.3%     6.2%     2.1%     0.5%
+  late (complaint)           6.8%     9.3%     7.3%     3.9%     0.9%
+  wrong / broken             8.0%     8.2%     5.4%     2.2%     0.6%
+  poor quality               6.6%     5.1%     2.8%     2.2%     2.7%
+  no seller contact          5.6%     3.1%     1.6%     0.4%     0.2%
+  praise                     4.3%     5.9%     8.8%    22.8%    43.4%
+
+  185 FIVE-star reviews still mention a delay (0.9% of 5-star comments)
+  => a small group forgives the delay and rates 5 anyway - invisible in the score alone.
+
+  the themes separate the scores far more sharply than the score separates itself:
+  'never arrived' runs 29.5% -> 1.4% across 1 to 5 stars, and 'no seller contact'
+  5.6% -> 0.2%. Silence from the seller is a 1-star signature, not a 3-star one.
+
+==========================================================================================
+4. ANOMALIES WORTH FLAGGING SEPARATELY
+==========================================================================================
+        6  orders marked canceled but with a delivery timestamp
+       23  orders delivered BEFORE the carrier collected them
+       64  delivered orders taking over 100 days
+    3,159  orders where freight exceeds the item price
+       13  orders where freight is over 5x the item price
+      797  products with zero or missing weight
+      775  orders with no line items at all
+        3  payment records typed 'not_defined' (R$0)
+        3  orders whose payment total is R$0
+        0  reviews answered before the survey was created
+
+  the extreme delivery tail:
+    n=64   max 210 days   mean review score 2.77
+    states: SP=15, RJ=10, BA=10, CE=4, ES=4
+
+  freight outliers (freight > 5x item price):
+    n=13   median item price R$6.99   median freight R$37.90   median weight 200g
+    their mean review score 3.38 vs platform 4.07
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q9_retention.png

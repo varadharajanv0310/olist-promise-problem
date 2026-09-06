@@ -1,0 +1,58 @@
+
+========================================================================================
+SETUP
+========================================================================================
+  train :  71,118 orders  2016-09-15 -> 2018-04-30
+  test  :  25,352 orders  2018-05-01 -> 2018-08-29
+  test late rate under Olist's actual promise: 6.21%
+  test median promise: 20.4d   actual: 7.8d
+  features: 18   (all knowable at checkout; seller history from train only)
+
+========================================================================================
+MODEL A - QUANTILE MODEL: promise the 90th percentile of predicted delivery time
+========================================================================================
+  Olist today          : mean promise  21.4d   late  6.21%
+  risk-based q=0.80    : mean promise  14.1d   late 13.92%   (-7.3d, +7.71pp)
+  risk-based q=0.85    : mean promise  15.5d   late 10.50%   (-5.9d, +4.28pp)
+  risk-based q=0.90    : mean promise  17.3d   late  7.32%   (-4.0d, +1.10pp)
+  risk-based q=0.95    : mean promise  21.4d   late  3.28%   (+0.1d, -2.93pp)
+
+  *** AT THE SAME PROMISE LENGTH (21.4d vs Olist's 21.4d, q=0.95):
+      late rate 3.28% vs 6.21% - 47% fewer late orders
+      for a customer-facing promise of identical length.
+
+      The buffer is not reduced, it is REALLOCATED - taken off the orders that never
+      needed it and given to the ones that did.
+
+========================================================================================
+IS IT ACTUALLY BETTER THAN JUST PADDING SMARTER?  (flat buffer, matched risk)
+========================================================================================
+  at 13.92% late:  risk-based needs  14.1d   |   flat buffer needs  15.3d   -> risk-based is  1.3d shorter
+  at 10.50% late:  risk-based needs  15.5d   |   flat buffer needs  17.3d   -> risk-based is  1.8d shorter
+  at  7.32% late:  risk-based needs  17.3d   |   flat buffer needs  19.3d   -> risk-based is  2.0d shorter
+  at  3.28% late:  risk-based needs  21.4d   |   flat buffer needs  24.3d   -> risk-based is  2.9d shorter
+
+========================================================================================
+MODEL B - P(LATE) CLASSIFIER under the promise actually given
+========================================================================================
+  ROC-AUC 0.6925   PR-AUC 0.1247   base rate 6.21%
+
+  risk deciles (calibration + lift):
+           n   pred  actual_late_rate   lift
+decile                                      
+0       2536  0.005             2.760  0.444
+1       2535  0.019             1.223  0.197
+2       2535  0.027             2.012  0.324
+3       2535  0.035             3.866  0.622
+4       2535  0.044             4.892  0.787
+5       2535  0.055             4.536  0.730
+6       2535  0.068             8.047  1.295
+7       2535  0.084             8.994  1.448
+8       2535  0.112            12.308  1.981
+9       2536  0.224            13.486  2.171
+
+  the riskiest 10% of orders contain 13.5% late (2.2x the base rate)
+  contacting the riskiest 30% of orders (7,606) reaches 882 of 1,575 late orders (56%)
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q7_risk_scorer.png
+
+  -> D:\Data Analytics Hackathon - Gradient\data\processed\risk_scores_test.parquet   (25,352 scored orders)

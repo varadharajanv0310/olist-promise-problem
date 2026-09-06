@@ -1,0 +1,68 @@
+
+============================================================================================
+SELLER SCORECARD  (788 sellers with >= 20 reviewed orders)
+============================================================================================
+  they cover 84,381 orders (87.6% of reviewed volume) and R$10.8M revenue
+
+  raw score spread      : p10 3.76  median 4.15  p90 4.50
+  MIX-ADJUSTED gap      : p10 -0.36  median +0.04  p90 +0.40
+  => the spread is 0.75 stars wide even after
+     controlling for what they sell and how far they ship. Sellers genuinely differ.
+
+============================================================================================
+THE INTERVENTION LIST - top 20 sellers by total stars lost
+============================================================================================
+                 orders    revenue  score  exp_score  score_gap  stars_lost   late  exp_late  handoff  med_km state                top_cat
+2eb70248d66e...     201   42587.61   2.65       4.05      -1.40      281.88  13.98      7.76     9.60  360.87    SP          watches_gifts
+6560211a19b4...    1830  122499.81   3.93       4.06      -0.12      221.99   6.46      8.09     0.90  366.00    SP          watches_gifts
+cc419e0650a3...    1685  103185.63   4.07       4.19      -0.12      207.16   6.07      8.30     1.99  366.17    SP          health_beauty
+1ca7077d890b...     115   13411.27   2.32       3.96      -1.63      187.88  22.22      8.02     5.78  269.13    SP                unknown
+4a3ca9315b74...    1723  196617.81   3.84       3.94      -0.10      175.69  10.78      9.21     1.83  403.05    SP         bed_bath_table
+7c67e1448b00...     975  188061.74   3.48       3.64      -0.16      154.88  10.04      9.01    11.00  331.24    SP       office_furniture
+897060da8b9a...     313   23486.48   3.61       4.02      -0.40      125.73  12.00      7.88     2.18  420.02    SP  computers_accessories
+88460e8ebdec...     234   30996.05   3.47       3.98      -0.51      118.54  20.69      8.00     6.23  552.77    PR  computers_accessories
+1835b56ce799...     405   34215.97   3.64       3.93      -0.29      116.98  12.28      9.04     1.24  362.26    SP         bed_bath_table
+a49928bcdf77...      90    8257.39   2.97       4.16      -1.20      107.84  25.84      7.86     6.28  349.36    SP                   toys
+cca3071e3e9b...     680   63059.03   3.85       3.99      -0.14       96.44   5.70      8.40     2.78  400.53    SP        furniture_decor
+8444e55c1f13...      97   22608.56   3.28       4.18      -0.90       87.14   6.67      7.30     7.52  275.17    MG              perfumery
+710e3548e02b...     135   23938.81   3.36       4.01      -0.64       87.06   4.62      8.62     1.23  518.10    PR        furniture_decor
+855668e0971d...     307   31917.17   3.77       4.05      -0.28       87.02  14.24      9.04     3.40  373.90    SP                   baby
+70a12e78e608...     313   30744.33   3.79       4.05      -0.27       83.62  10.97      8.65     2.65  371.17    SP  computers_accessories
+3c7c4a49ec3c...     138    3996.75   3.66       4.25      -0.59       80.88   8.09      6.30     1.32   68.31    SP              perfumery
+7040e82f899a...     204    9534.00   3.60       4.00      -0.39       80.58   9.50      9.24     1.33  343.18    SP                  audio
+d2374cbcbb3c...     507   20935.54   3.79       3.94      -0.16       79.93   6.04      8.92     3.73  353.67    SP         bed_bath_table
+972d0f9cf61b...      81    8315.29   2.95       3.87      -0.92       74.76  11.39     10.56     4.05  564.46    SC         bed_bath_table
+54965bbe3e4f...      78   11243.19   2.90       3.84      -0.94       73.27  30.14     11.58     6.50  836.97    PR         bed_bath_table
+
+  these 20 sellers are 2.5% of scored sellers and 12.0% of orders,
+  but account for 35.5% of all stars lost to seller underperformance.
+  combined revenue at risk: R$0.99M
+
+============================================================================================
+WHAT SEPARATES A BAD SELLER FROM A GOOD ONE?
+============================================================================================
+              sellers  orders  score  score_gap   late  exp_late  late_gap  handoff  med_km
+tier                                                                                       
+worst 10%          79    4854   3.44      -0.64  15.02      7.99      7.04     3.01  372.73
+below median      315   43192   3.98      -0.12   9.11      7.98      1.13     1.79  386.75
+above median      315   32489   4.32       0.19   5.81      7.88     -2.07     1.24  407.76
+best 10%           79    3846   4.58       0.50   4.01      8.16     -4.14     1.10  455.06
+
+  correlation across sellers: score_gap vs late_gap   r = -0.557
+                              score_gap vs handoff    r = -0.373
+                              score_gap vs order size r = -0.011
+
+  => seller underperformance is mostly a FULFILMENT-SPEED problem they control:
+     the worst decile hands off to the carrier +1.91 days slower than the best decile,
+     and runs +11.2pp more late than its own mix predicts.
+
+============================================================================================
+CONCENTRATION - how much of the platform rides on how few sellers
+============================================================================================
+  top  10 sellers =  16.1% of scored revenue   (mean gap +0.059 stars)
+  top  25 sellers =  29.1% of scored revenue   (mean gap +0.038 stars)
+  top  50 sellers =  40.7% of scored revenue   (mean gap +0.041 stars)
+  top 100 sellers =  55.5% of scored revenue   (mean gap +0.021 stars)
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q8_seller_scorecard.png
+
+  -> D:\Data Analytics Hackathon - Gradient\data\processed\seller_scorecard.parquet  (788 sellers)
