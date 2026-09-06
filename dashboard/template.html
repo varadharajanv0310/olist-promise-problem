@@ -4,7 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 html{scroll-behavior:smooth}
-body{margin:0;background:#f2f2ef;color:#111110;font-family:Archivo,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:#fbfbfa;color:#111110;font-family:Archivo,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#111110;text-decoration:none}
 a:hover{color:#b4541f}
 ::selection{background:#111110;color:#f2f2ef}
@@ -24,8 +24,12 @@ a:hover{color:#b4541f}
   border:1px solid #111110;background:#111110;color:#fbfbfa;cursor:pointer;white-space:nowrap;flex:none}
 .allbtn:hover{background:#fbfbfa;color:#111110}
 .qrow:hover{background:#f7f7f5}
+/* Full-bleed tint: the shadow spreads past the centred container to the viewport edge, and the
+   clip keeps that spread horizontal only, so alternating bands never stop short at the gutter. */
+.bleed{box-shadow:0 0 0 100vmax #f7f7f5;clip-path:inset(0 -100vmax)}
 .ghlink{color:#5c5c58}
 .ghlink:hover{color:#b4541f;border-color:#b4541f}
+@media (max-width:640px){.bleed{box-shadow:none;clip-path:none}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
     transition-duration:.001ms!important}
@@ -52,7 +56,9 @@ a:hover{color:#b4541f}
   <div class="mono" style="position:relative;font-size:10px;letter-spacing:.18em;color:#5c5c58">READING DELIVERY OUTCOMES<span style="animation:omBlink 1s steps(1) infinite">_</span></div>
 </div>
 
-<div style="width:100%;background:#fbfbfa;overflow:hidden">
+<!-- A deliberate gutter rather than either extreme: always a margin so the sheet reads as a
+     sheet on the page ground, but a high cap so wide screens stay close to full-bleed. -->
+<div style="width:calc(100% - 56px);max-width:1720px;margin:0 auto;background:#fbfbfa">
 
   <!-- ── sticky nav ─────────────────────────────────────────────────────── -->
   <div style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 26px;background:rgba(251,251,250,.92);backdrop-filter:blur(8px);border-bottom:1px solid #e2e2dd">
@@ -114,7 +120,7 @@ a:hover{color:#b4541f}
   </div>
 
   <!-- ── stat strip ─────────────────────────────────────────────────────── -->
-  <div id="statstrip" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-bottom:1px solid #e2e2dd;background:#f7f7f5"></div>
+  <div id="statstrip" class="bleed" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-bottom:1px solid #e2e2dd;background:#f7f7f5"></div>
 
   <!-- ── 01 the cliff ───────────────────────────────────────────────────── -->
   <div id="cliff" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;scroll-margin-top:60px">
@@ -163,7 +169,7 @@ a:hover{color:#b4541f}
   </div>
 
   <!-- ── 02 the post-mortem ─────────────────────────────────────────────── -->
-  <div id="timeline" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
+  <div id="timeline" class="bleed" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
       <div style="max-width:44ch">
         <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#fbfbfa;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">02 — THE POST-MORTEM</div>
@@ -297,7 +303,7 @@ a:hover{color:#b4541f}
   </div>
 
   <!-- ── 04 the honesty chart ───────────────────────────────────────────── -->
-  <div id="onestar" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
+  <div id="onestar" class="bleed" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
       <div style="max-width:44ch">
         <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#fbfbfa;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">04 — THE HONESTY CHART</div>
@@ -375,7 +381,7 @@ a:hover{color:#b4541f}
   </div>
 
   <!-- ── 06 the queue ───────────────────────────────────────────────────── -->
-  <div id="queue" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
+  <div id="queue" class="bleed" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
       <div style="max-width:44ch">
         <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#fbfbfa;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">06 — THE QUEUE</div>
@@ -444,7 +450,7 @@ a:hover{color:#b4541f}
   </div>
 
   <!-- ── 08 the drivers ─────────────────────────────────────────────────── -->
-  <div id="drivers" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
+  <div id="drivers" class="bleed" style="padding:56px 26px 60px;border-bottom:1px solid #e2e2dd;background:#f7f7f5;scroll-margin-top:60px">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
       <div style="max-width:44ch">
         <div class="mono" style="display:inline-block;border:1px solid #d9d9d4;background:#fbfbfa;font-size:9px;letter-spacing:.18em;padding:4px 8px;color:#5c5c58">08 — THE DRIVERS</div>
