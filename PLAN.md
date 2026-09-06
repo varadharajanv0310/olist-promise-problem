@@ -1,107 +1,91 @@
-# Olist Hackathon — End-to-End Plan
+# Olist Hackathon — Plan (revised after all analysis complete)
 
-**Narrative spine:** *Olist doesn't have a delivery problem. It has a promise problem — and it is
-throwing away its best early-warning signal.*
+**Spine:** *Olist doesn't have a delivery problem. It has a promise problem — and it is solving it
+with a blunt instrument.*
 
-Scoring weights: Problem understanding 15 · Cleaning & Analytical 20 · **Insight Quality & Evidence 25**
-· LinkedIn 15 · **Recommendations & Visualisation 25**.
+**The one number:** a risk-based promise delivers **47% fewer late orders at exactly the same
+customer-facing promise length.** Not a trade-off — a strictly better operating point.
 
----
-
-## Phase 0 — Foundation ✅ DONE
-
-| # | Task | Output |
-|---|---|---|
-| 0.1 | Extract 9 sheets from the delivered `.xlsx` | `data/raw/*.csv` |
-| 0.2 | Structural + quality profile | `reports/profile_01.txt` |
-| 0.3 | Test the 4 opening hypotheses | `reports/survey_timing.txt` |
-| 0.4 | RD falsification test on survey timing | `reports/rdd_robustness.txt` |
-
-**Established so far**
-- ETA is padded ~12 days (median actual 10.2d vs promised 23.2d); 93% arrive early/on time.
-- Satisfaction is a **cliff, not a slope**: flat 4.31→4.12 across all early buckets, then
-  3.75 → 2.30 → 1.72, saturating by ~day 7 late.
-- Late-order delay is **87% carrier transit** (+17.0d of +19.4d), only 6% seller handoff.
-- Survey timing has **no causal effect** on score (RD ≈ 0, CI rules out >0.52 stars). The anger is real.
-- Pre-delivery 1-stars are 53% "não recebi" vs 16% post-delivery → an unactioned support signal.
-- Retention is 3.12% of people / 6.38% of orders.
-- Boleto approval lag 29h vs 0.27h card; voucher orders fail to deliver at 7.6% vs 2.9%.
+Scoring: Problem understanding 15 · Cleaning 20 · **Insight Quality 25** · LinkedIn 15 ·
+**Recommendations & Visualisation 25**.
 
 ---
 
-## Phase 1 — Cleaning & the analytical base table  ⏳ NEXT
+## ✅ Analysis: COMPLETE
 
-Build **one row per order** (`data/processed/orders_analytical.parquet`), every downstream question
-reads from this. `scripts/10_build_base.py`.
+| Stage | Output |
+|---|---|
+| Phase 0 — profiling, RD falsification | `reports/profile_01.txt`, `rdd_robustness.txt` |
+| Phase 1 — cleaning + base table | `orders_analytical.parquet` (99,441 × 65) |
+| Q1–Q3 — trends, delivery, geography | `q1_*.txt`, `q2_*.txt`, `q3_*.txt` |
+| Q4–Q6 — categories, payments, root cause | `q4_*.txt`, `q5_*.txt`, `q6_*.txt` |
+| Multi-seller discovery | `q6_multiseller.txt` |
+| Risk scorer | `risk_scorer.txt`, `risk_scores_test.parquet` |
+| Seller scorecard | `seller_scorecard.txt`, `seller_scorecard.parquet` |
+| Deep dives | `deep_dives.txt` |
 
-**Documented cleaning decisions** (this section *is* the 20% Cleaning score — narrate every choice):
-1. Dedupe reviews — 827 dup `review_id`, 555 orders with >1 survey → keep first by creation date.
-2. 775 itemless orders → **left** join, retain with null revenue (they are the canceled/unavailable
-   ones; an inner join silently deletes the worst-performing orders).
-3. Category translation: 71 of 73 covered → hand-add `pc_gamer`,
-   `portateis_cozinha_e_preparadores_de_alimentos`.
-4. Geolocation → mean lat/lng per zip prefix (52.6 rows/prefix), clipped to Brazil's bounding box
-   (lat −34…+6, lng −74…−34) to drop bad readings.
-5. Trend window **Jan 2017 – Aug 2018**; the 2016 head and Sep/Oct 2018 tail are export artifacts
-   (4, 1, 16 and 4 orders) and must never appear in a time series.
-6. `not_defined` payments (3 rows, R$0, 100% undelivered) → flag, exclude from payment mix.
-7. Multi-item/multi-seller orders → aggregate deliberately; record `n_items`, `n_sellers`.
-
-**Derived features:** `actual_days`, `promised_days`, `gap_days`, `is_late`, `late_bucket`,
-`t_approve`/`t_handoff`/`t_transit`, `order_value`, `freight_total`, `freight_ratio`,
-`seller_customer_km` (haversine), `primary_category_en`, `payment_type`, `installments`,
-`is_repeat_customer`, `customer_order_seq`, `pre_delivery_review`, `has_comment`.
+**13 figures** in `figures/`.
 
 ---
 
-## Phase 2 — The six core questions
+## ⏳ What's left
 
-| Q | Analysis | Headline chart |
-|---|---|---|
-| **Q1** Trends | Monthly volume / revenue / AOV / mean score / %1-star. **Lagged demand-vs-quality**: does a volume spike predict a score trough 2–4 weeks later? (Black Friday Nov 2017) | Dual-axis growth vs satisfaction, spike annotated |
-| **Q2** Delivery ↔ CSAT | The cliff. Does it hold across category & region or concentrate? Earliness has no upside → **the padding is rational**. Buffer-reduction sensitivity curve. | The cliff + sensitivity curve |
-| **Q3** Geography | Haversine seller↔customer distance vs delivery days vs freight vs score. Reframe: not *state*, but **distance from the São Paulo seller cluster**. | State map + distance scatter |
-| **Q4** Categories | Volume × price × score portfolio. Which categories are genuinely weak vs merely badly shipped (control for `gap_days`). | 2×2 bubble portfolio |
-| **Q5** Payments | The chain: boleto → 29h approval lag → later dispatch → risk. Installments vs order value. Voucher failure rate. | Lag + failure-rate by method |
-| **Q6** Root cause | **Logistic model on P(1-star)** — not mean score, the distribution is bimodal (57% fives). Ranked odds ratios → primary vs secondary drivers. Non-delivered statuses broken out as a separate failure mode. | Ranked driver chart |
+### A. Two open anomalies (half session) — credibility cheap to buy
+1. **Rio de Janeiro.** 394 km median distance (closer than Paraná) but a **13.5% late rate vs
+   Paraná's 4.9%** on the platform's 2nd-biggest market. Distance explains every other state; it
+   does not explain Rio. Decompose RJ's delay into handoff vs transit to find out whose problem it is.
+2. **Feb–Mar 2018.** Worst months in the dataset — 21.4% late, 3.74★ — and *not* a Black Friday
+   effect. Was it volume, a specific route, a carrier, or a promise change? Currently unexplained,
+   and an unexplained worst-month is a hole a judge will find.
+
+### B. The Colab notebook
+Sections named to the rubric, runs top to bottom. Assembled from the existing scripts — the work is
+narration, not analysis. **No `statsmodels`** (broken vs scipy ≥1.16); RD and logit are numpy.
+
+### C. The dashboard — a decision tool, not a chart gallery
+Everyone will submit a chart gallery. Two interactive pieces nobody else can build, because they
+require the modelling to exist first:
+
+- **The Promise Simulator.** A slider over the risk quantile → live mean promise length, late rate,
+  and projected review score. Makes the central trade-off something leadership can *feel* rather
+  than read. This is the thesis, made operable.
+- **The Seller Intervention Queue.** The scorecard, sortable and filterable: 20 named sellers, their
+  handoff times, stars lost, and revenue at risk. Turns a recommendation into a worklist.
+
+Plus the static evidence charts. Published as an Artifact → gives us a live URL to link from the
+LinkedIn post.
+
+### D. The report
+Structured around **falsification, not findings** — the differentiator. It opens with what we
+expected, shows the test, and reports what actually held. Includes a section no one else will write:
+
+> **"Three recommendations this analysis killed"**
+> 1. *"Tighten the delivery estimates"* — the asymmetry says no, and Olist already ran the
+>    experiment: promise cut 39d → 13.4d, late rate tripled.
+> 2. *"Delay the review survey"* — 37% of 1-stars are written pre-delivery, but the regression
+>    discontinuity returns ≈0. The anger is real; the fix does nothing.
+> 3. *"Fix the worst-rated sellers"* — raw rating targets small sellers with noisy averages.
+>    Ranking by stars lost targets the ones whose failure actually reaches customers.
+
+### E. Three-minute video
+Timed script (~420 words): problem → approach → insight → recommendation. Written to the second.
+
+### F. One LinkedIn post
+At the end, linking the live dashboard. Lead with the 47% result.
 
 ---
 
-## Phase 3 — Deep dives (pick the two that pay)
+## The recommendation stack
 
-- **Repeat customers** — 3.12% repeat rate. Does a bad first order kill the second? This is the slide
-  that connects CX to revenue.
-- **Seller "Review Damage" scorecard** — `orders × (platform_avg − seller_avg)`, ranking sellers by
-  *impact* not badness. Ships as a named top-20 intervention list.
-- **Anomalies** — 209-day deliveries, zero-weight products, `not_defined` payments, Dec-2016.
+| # | Recommendation | Evidence | Expected effect | Confidence |
+|---|---|---|---|---|
+| 1 | **Promise per order, not per platform** (risk-based ETA) | held-out test, 25,352 orders | −47% late orders at equal promise length | High |
+| 2 | **Fix the multi-parcel completion bug** — don't mark an order delivered, or fire the survey, until the last parcel lands | OR 4.99; 36% vs 6% 1-star on-time; text 3.97× | ~342 excess 1-stars/yr, cheap fix | High |
+| 3 | **Route pre-delivery 1-stars to live recovery** — 8,446 customers report non-receipt while still recoverable | 53% "não recebi" vs 16% | Recovery, not score inflation (RD says score won't move) | Medium |
+| 4 | **Seller SLA on handoff time** — worst decile hands off 3.0d vs best 1.1d | scorecard, r = −0.37 | 20 sellers = 39% of stars lost | High |
+| 5 | **Treat non-delivery as inventory, not logistics** — `unavailable`/`processing` score 1.3–1.5★ | 2,963 orders, 70.5% 1-star | 2,089 1-stars unreachable by delivery fixes | High |
+| 6 | **Regional fulfilment for the North/Northeast** | distance r = +0.87 with delivery time | Structural; long horizon | Medium |
 
----
-
-## Phase 4 — Deliverables
-
-1. **Colab notebook** — sections named to match the rubric exactly, runs top-to-bottom.
-   *Note: avoid `statsmodels` (broken vs scipy ≥1.16); RD/logit written in numpy.*
-2. **Analysis report** — published HTML artifact + PDF export.
-3. **3-min video** — timed script (~420 words) + slides. Order: problem → approach → insight →
-   recommendation.
-4. **LinkedIn — 5 posts**, one visual each, each ending on a question:
-   - P1 "Olist promises 23 days and delivers in 10. That's not incompetence — it's insurance."
-   - P2 The cliff chart — satisfaction doesn't decay, it falls off a ledge at day 3.
-   - P3 **"I found a smoking gun. Then I ran the test that killed it."** (the RD null — strongest
-     engagement hook of the set, and the most honest)
-   - P4 "97% of customers never come back."
-   - P5 Recommendations + link to the full report.
-
----
-
-## Recommendations these roll up to (draft)
-
-1. **Do not tighten the ETA.** Earliness buys ~0.1 stars; lateness costs ~2. The padding is a
-   correctly-priced insurance policy. Quantify with the sensitivity curve.
-2. **Route pre-delivery 1-stars into a live recovery workflow** — 8,445 customers/yr report
-   non-receipt while the order is still recoverable, and Olist files it as historical sentiment.
-3. **Attack transit, not sellers** — 87% of excess delay is line-haul, concentrated on long-distance
-   routes out of the SP cluster. Regional fulfilment / carrier renegotiation on the worst lanes.
-4. **Fix the non-delivery bucket separately** — `unavailable`/`processing` orders score 1.3–1.5★.
-   That's an inventory-accuracy problem, not a logistics one.
-5. **Seller interventions targeted by review damage**, not by raw rating.
+**The honest caveat that must appear in the report:** delivery failure explains 48.8% of 1-star
+reviews. **51.2% arrived on time and the customer was furious anyway.** The promise problem is the
+biggest single lever, not the whole story.
