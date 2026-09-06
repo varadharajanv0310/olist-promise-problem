@@ -1,0 +1,102 @@
+
+================================================================================
+Q3  THE IMBALANCE - where sellers are vs where customers are
+================================================================================
+    customer_share  seller_share  imbalance
+SP           41.98         70.89      28.91
+RJ           12.92          4.37      -8.56
+MG           11.70          7.97      -3.74
+RS            5.50          2.00      -3.50
+PR            5.07          7.70       2.63
+SC            3.66          3.67       0.01
+BA            3.40          0.57      -2.83
+DF            2.15          0.83      -1.32
+ES            2.04          0.32      -1.72
+GO            2.03          0.47      -1.57
+PE            1.66          0.41      -1.25
+CE            1.34          0.09      -1.25
+
+  top 1 seller state (SP) supplies 70.9% of orders but holds 42.0% of customers
+  top 3 seller states supply 86.6% of all orders
+  17 of 23 states supply under 1% of orders each
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q3_seller_customer_imbalance.png
+
+================================================================================
+Q3  DISTANCE IS THE MECHANISM
+================================================================================
+   dbin     n  med_delivery  med_transit  pct_late  mean_score  pct_1star  mean_freight  mean_value  freight_pct_of_value
+    <50 11722          4.90         1.96      6.48        4.27       7.84         13.13      110.10                 11.92
+ 50-150 10263          6.11         3.05      6.33        4.27       7.74         15.09      124.74                 12.10
+150-300  9243          8.95         6.09      6.40        4.21       8.73         19.68      132.19                 14.89
+300-600 31507         10.33         7.14      7.76        4.12      10.60         22.40      133.77                 16.75
+ 600-1k 17898         12.53         9.09      8.47        4.11      10.58         24.81      139.54                 17.78
+1k-1.5k  6577         14.91        11.83     10.10        4.04      11.87         29.77      167.57                 17.77
+1.5k-2k  3158         16.87        13.84     12.06        4.04      11.37         40.03      178.25                 22.46
+    2k+  5608         18.25        14.77     13.64        3.96      13.37         39.85      175.73                 22.68
+
+  <50km  -> 2000km+ :  delivery 4.9d -> 18.3d   late 6.5% -> 13.6%   score 4.27 -> 3.96
+  freight rises 3.0x while order value rises only 1.6x
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q3_distance_gradient.png
+
+================================================================================
+Q3  IS IT THE STATE, OR IS IT THE DISTANCE?
+================================================================================
+                    n   med_km  med_delivery  pct_late  mean_score  mean_freight  mean_value  freight_pct
+customer_state                                                                                           
+PA                944  2393.71         21.08     12.39        3.88         39.70      184.44        21.52
+CE               1272  2292.30         18.21     15.41        3.94         36.43      171.32        21.27
+RN                472  2264.01         16.05     10.59        4.12         39.28      173.48        22.64
+MA                713  2196.56         19.14     19.50        3.83         43.02      162.85        26.42
+PB                511  2162.53         18.20     11.15        4.05         48.76      216.99        22.47
+PE               1588  2081.51         15.71     10.77        4.07         35.84      158.36        22.63
+PI                473  2052.13         16.28     15.86        3.98         43.14      177.95        24.25
+AL                396  1914.76         22.39     23.99        3.83         38.55      198.80        19.39
+SE                334  1721.09         17.99     15.27        3.90         40.91      169.11        24.19
+BA               3238  1421.95         16.92     13.93        3.91         29.93      151.64        19.74
+MT                881  1332.64         16.10      6.81        4.14         32.82      171.74        19.11
+DF               1914   866.99         11.37      7.16        4.12         23.91      142.27        16.81
+MS                699   863.59         13.94     11.44        4.16         27.01      164.85        16.38
+RS               5327   855.49         13.18      7.11        4.18         24.81      136.45        18.18
+GO               1944   804.56         13.94      8.23        4.09         26.31      145.01        18.14
+ES               1984   762.02         13.63     12.10        4.04         24.56      134.71        18.23
+SC               3538   528.07         13.01      9.72        4.12         24.86      143.11        17.37
+MG              11318   490.38         10.31      5.61        4.18         23.47      136.81        17.16
+PR               4899   425.95         10.42      4.92        4.23         23.50      135.54        17.34
+RJ              12303   394.10         12.04     13.47        3.95         23.94      142.56        16.79
+SP              40407   163.56          7.21      5.90        4.24         17.33      125.16        13.85
+
+  across states, median distance correlates with:
+    delivery time     r = +0.868
+    late rate         r = +0.607
+    mean review score r = -0.637
+    freight as % of order value r = +0.870
+    figure -> D:\Data Analytics Hackathon - Gradient\figures/q3_state_distance_vs_late.png
+
+================================================================================
+Q3  WHO PAYS FOR THE DISTANCE?
+================================================================================
+   dbin  mean_value  mean_freight  freight_pct_of_value
+    <50      110.10         13.13                 11.92
+ 50-150      124.74         15.09                 12.10
+150-300      132.19         19.68                 14.89
+300-600      133.77         22.40                 16.75
+ 600-1k      139.54         24.81                 17.78
+1k-1.5k      167.57         29.77                 17.77
+1.5k-2k      178.25         40.03                 22.46
+    2k+      175.73         39.85                 22.68
+
+  a customer 2000km+ away pays R$39.85 freight on an R$175.73 order (22.7%)
+  a customer <50km away pays R$13.13 on an R$110.10 order (11.9%)
+
+  freight per 100km travelled: R$1.59 at 2500km vs R$52.51 at 25km -> long routes are heavily cross-subsidised
+
+================================================================================
+Q3  SELLER CONCENTRATION (setup for the seller scorecard)
+================================================================================
+  top  1% of sellers (  30 of 3,085) =  25.6% of revenue
+  top  5% of sellers ( 154 of 3,085) =  53.2% of revenue
+  top 10% of sellers ( 308 of 3,085) =  67.5% of revenue
+  top 20% of sellers ( 617 of 3,085) =  82.6% of revenue
+
+  sellers with >=20 orders: 812
+  their mean-score spread: p10 3.76  median 4.15  p90 4.50
