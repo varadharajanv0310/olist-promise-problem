@@ -10,10 +10,10 @@
 | # | Deliverable | Status | What to submit |
 |---|---|---|---|
 | 1 | **Google Colab notebook** | ✅ built, verified | Upload `notebook/olist_promise_problem.ipynb` to Colab → **Share → Anyone with the link → Viewer** → submit that link |
-| 2 | **Analysis report** | ✅ published | https://claude.ai/code/artifact/8fb42cc0-e0f0-4cfa-a478-b7ac857468c6 |
+| 2 | **Analysis report** | ✅ deployed | https://varadharajanv0310.github.io/olist-promise-problem/report/ |
 | 3 | **Three-minute video** | ⏳ **you record** | Script in `video/script.md`. Screen-record the dashboard, upload unlisted to YouTube/Drive, submit the link |
 | 4 | **LinkedIn post** | ⏳ **you post** | Copy in `linkedin/final-post.md`. Submit the post URL + a screenshot of likes/comments at the deadline |
-| — | Interactive dashboard | ✅ published | https://claude.ai/code/artifact/875ea937-031e-4599-8b37-538f111444d0 — include it as a bonus link wherever the form allows |
+| — | Interactive dashboard | ✅ deployed | https://varadharajanv0310.github.io/olist-promise-problem/ — include it as a bonus link wherever the form allows |
 
 Everything goes into the Google Form the organisers share.
 

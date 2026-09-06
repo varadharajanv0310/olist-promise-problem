@@ -2,6 +2,8 @@
 
 **An analysis of 99,441 orders on the Olist Brazilian marketplace (Sep 2016 – Oct 2018).**
 
+🔗 **[Interactive dashboard](https://varadharajanv0310.github.io/olist-promise-problem/)** · **[Analysis report](https://varadharajanv0310.github.io/olist-promise-problem/report/)** · **[Notebook](notebook/olist_promise_problem.ipynb)**
+
 Olist promises customers a delivery date, then beats it by a median of twelve days. That sounds like
 broken forecasting. It isn't — it's a correctly-priced insurance policy, and this analysis shows why
 the obvious recommendation (tighten the estimates) would destroy value.
