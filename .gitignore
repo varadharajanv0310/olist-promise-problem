@@ -22,3 +22,6 @@ dashboard/index.html
 
 # built report bundle (regenerate: python scripts/51_build_report.py)
 report/index.html
+
+# deployed site (built copies of the dashboard and report)
+!docs/
